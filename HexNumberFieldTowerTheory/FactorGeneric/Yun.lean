@@ -6,7 +6,7 @@ Authors: Kim Morrison
 
 module
 
-public import HexNumberFieldTowerMathlib.FactorGeneric.Product
+public import HexNumberFieldTowerTheory.FactorGeneric.Product
 
 public section
 
@@ -42,23 +42,23 @@ theorem rawPolynomial_monic_associated
   let : Field (Arithmetic.Coeff levels) :=
     Norm.coeffFieldPoly levels hvalid hinjective hinv
   let ι := LevelSemantics.coeffHom levels hvalid hinjective hinv
-  have hfSource : HexPolyMathlib.toPolynomial f ≠ 0 := by
+  have hfSource : HexPolyTheory.toPolynomial f ≠ 0 := by
     intro hzero
     apply hf
     rw [← Norm.rawPolynomialHom_apply levels hvalid hinjective hinv]
-    change (HexPolyMathlib.toPolynomial f).map ι = 0
+    change (HexPolyTheory.toPolynomial f).map ι = 0
     rw [hzero, Polynomial.map_zero]
   have hsource := toPolynomial_monic_associated levels hvalid hinjective
     hinv f (by
       intro hzero
       apply hfSource
-      rw [hzero, HexPolyMathlib.toPolynomial_zero])
+      rw [hzero, HexPolyTheory.toPolynomial_zero])
   have hmapped := Polynomial.associated_map_map ι hsource
   rw [← Norm.rawPolynomialHom_apply levels hvalid hinjective hinv,
     ← Norm.rawPolynomialHom_apply levels hvalid hinjective hinv]
   change Associated
-    ((HexPolyMathlib.toPolynomial (Norm.monic f)).map ι)
-    ((HexPolyMathlib.toPolynomial f).map ι)
+    ((HexPolyTheory.toPolynomial (Norm.monic f)).map ι)
+    ((HexPolyTheory.toPolynomial f).map ι)
   exact hmapped
 
 omit hvalid hinjective hinv in
@@ -103,31 +103,31 @@ theorem monicGcd_dvd
       Norm.monic (DensePoly.gcd f g) ∣ g := by
   let : Field (Arithmetic.Coeff levels) :=
     Norm.coeffFieldPoly levels hvalid hinjective hinv
-  let raw := HexPolyMathlib.toPolynomial (DensePoly.gcd f g)
+  let raw := HexPolyTheory.toPolynomial (DensePoly.gcd f g)
   let normalized := EuclideanDomain.gcd
-    (HexPolyMathlib.toPolynomial f) (HexPolyMathlib.toPolynomial g)
-  have hfPoly : HexPolyMathlib.toPolynomial f ≠ 0 := by
+    (HexPolyTheory.toPolynomial f) (HexPolyTheory.toPolynomial g)
+  have hfPoly : HexPolyTheory.toPolynomial f ≠ 0 := by
     intro hzero
     apply hf
-    apply (HexPolyMathlib.equiv
+    apply (HexPolyTheory.equiv
       (R := Arithmetic.Coeff levels)).injective
     simpa using hzero
   have hrawNormalized : Associated raw normalized :=
-    HexPolyMathlib.toPolynomial_gcd_associated f g
+    HexPolyTheory.toPolynomial_gcd_associated f g
   have hnormalized : normalized ≠ 0 := by
     intro hzero
     exact hfPoly (EuclideanDomain.gcd_eq_zero_iff.mp hzero).1
   have hraw : raw ≠ 0 := fun hzero =>
     hnormalized (hrawNormalized.eq_zero_iff.mp hzero)
   have hmonicRaw : Associated
-      (HexPolyMathlib.toPolynomial (Norm.monic (DensePoly.gcd f g))) raw :=
+      (HexPolyTheory.toPolynomial (Norm.monic (DensePoly.gcd f g))) raw :=
     toPolynomial_monic_associated levels hvalid hinjective hinv
       (DensePoly.gcd f g) (by
         intro hzero
         apply hraw
         simp [raw, hzero])
   have hmonicNormalized := hmonicRaw.trans hrawNormalized
-  constructor <;> rw [← HexPolyMathlib.toPolynomial_dvd_iff]
+  constructor <;> rw [← HexPolyTheory.toPolynomial_dvd_iff]
   · exact hmonicNormalized.dvd.trans
       (EuclideanDomain.gcd_dvd_left _ _)
   · exact hmonicNormalized.dvd.trans
@@ -141,33 +141,33 @@ theorem rawPolynomial_monicGcd_ne_zero
     Norm.rawPolynomial levels (Norm.monic (DensePoly.gcd f g)) ≠ 0 := by
   let : Field (Arithmetic.Coeff levels) :=
     Norm.coeffFieldPoly levels hvalid hinjective hinv
-  have hfSource : HexPolyMathlib.toPolynomial f ≠ 0 := by
+  have hfSource : HexPolyTheory.toPolynomial f ≠ 0 := by
     intro hzero
     apply hf
     rw [← Norm.rawPolynomialHom_apply levels hvalid hinjective hinv]
-    change (HexPolyMathlib.toPolynomial f).map
+    change (HexPolyTheory.toPolynomial f).map
       (LevelSemantics.coeffHom levels hvalid hinjective hinv) = 0
     rw [hzero, Polynomial.map_zero]
   let sourceGcd := EuclideanDomain.gcd
-    (HexPolyMathlib.toPolynomial f) (HexPolyMathlib.toPolynomial g)
+    (HexPolyTheory.toPolynomial f) (HexPolyTheory.toPolynomial g)
   have hsourceGcd : sourceGcd ≠ 0 := by
     intro hzero
     exact hfSource (EuclideanDomain.gcd_eq_zero_iff.mp hzero).1
   have hrawSource : Associated
-      (HexPolyMathlib.toPolynomial (DensePoly.gcd f g)) sourceGcd :=
-    HexPolyMathlib.toPolynomial_gcd_associated f g
+      (HexPolyTheory.toPolynomial (DensePoly.gcd f g)) sourceGcd :=
+    HexPolyTheory.toPolynomial_gcd_associated f g
   have hraw : DensePoly.gcd f g ≠ 0 := by
     intro hzero
     apply hsourceGcd
     apply hrawSource.eq_zero_iff.mp
-    rw [hzero, HexPolyMathlib.toPolynomial_zero]
+    rw [hzero, HexPolyTheory.toPolynomial_zero]
   have hsourceNe := toPolynomial_monic_associated levels hvalid hinjective
     hinv (DensePoly.gcd f g) hraw |>.ne_zero_iff.mpr (by
       intro hzero
       apply hsourceGcd
       exact hrawSource.eq_zero_iff.mp hzero)
   rw [← Norm.rawPolynomialHom_apply levels hvalid hinjective hinv]
-  change (HexPolyMathlib.toPolynomial
+  change (HexPolyTheory.toPolynomial
     (Norm.monic (DensePoly.gcd f g))).map
       (LevelSemantics.coeffHom levels hvalid hinjective hinv) ≠ 0
   exact (Polynomial.map_ne_zero_iff
@@ -188,29 +188,29 @@ theorem rootMultiplicity_monicGcd
   let : Field (Arithmetic.Coeff levels) :=
     Norm.coeffFieldPoly levels hvalid hinjective hinv
   let sourceGcd := EuclideanDomain.gcd
-    (HexPolyMathlib.toPolynomial f) (HexPolyMathlib.toPolynomial g)
+    (HexPolyTheory.toPolynomial f) (HexPolyTheory.toPolynomial g)
   let targetGcd := EuclideanDomain.gcd
     (Norm.rawPolynomial levels f) (Norm.rawPolynomial levels g)
-  have hfSource : HexPolyMathlib.toPolynomial f ≠ 0 := by
+  have hfSource : HexPolyTheory.toPolynomial f ≠ 0 := by
     intro hzero
     apply hf
     rw [← Norm.rawPolynomialHom_apply levels hvalid hinjective hinv]
-    change (HexPolyMathlib.toPolynomial f).map
+    change (HexPolyTheory.toPolynomial f).map
       (LevelSemantics.coeffHom levels hvalid hinjective hinv) = 0
     rw [hzero, Polynomial.map_zero]
   have hsourceGcd : sourceGcd ≠ 0 := by
     intro hzero
     exact hfSource (EuclideanDomain.gcd_eq_zero_iff.mp hzero).1
   have hrawSource : Associated
-      (HexPolyMathlib.toPolynomial (DensePoly.gcd f g)) sourceGcd :=
-    HexPolyMathlib.toPolynomial_gcd_associated f g
+      (HexPolyTheory.toPolynomial (DensePoly.gcd f g)) sourceGcd :=
+    HexPolyTheory.toPolynomial_gcd_associated f g
   have hraw : DensePoly.gcd f g ≠ 0 := by
     intro hzero
     apply hsourceGcd
     apply hrawSource.eq_zero_iff.mp
-    rw [hzero, HexPolyMathlib.toPolynomial_zero]
+    rw [hzero, HexPolyTheory.toPolynomial_zero]
   have hmonicSource : Associated
-      (HexPolyMathlib.toPolynomial (Norm.monic (DensePoly.gcd f g)))
+      (HexPolyTheory.toPolynomial (Norm.monic (DensePoly.gcd f g)))
       sourceGcd :=
     (toPolynomial_monic_associated levels hvalid hinjective hinv
       (DensePoly.gcd f g) hraw).trans hrawSource
@@ -220,24 +220,24 @@ theorem rootMultiplicity_monicGcd
       (sourceGcd.map ι) := by
     rw [← Norm.rawPolynomialHom_apply levels hvalid hinjective hinv]
     change Associated
-      ((HexPolyMathlib.toPolynomial
+      ((HexPolyTheory.toPolynomial
         (Norm.monic (DensePoly.gcd f g))).map ι)
       (sourceGcd.map ι)
     exact Polynomial.associated_map_map ι hmonicSource
   have hmapGcd : sourceGcd.map ι = targetGcd := by
-    change (EuclideanDomain.gcd (HexPolyMathlib.toPolynomial f)
-      (HexPolyMathlib.toPolynomial g)).map ι =
+    change (EuclideanDomain.gcd (HexPolyTheory.toPolynomial f)
+      (HexPolyTheory.toPolynomial g)).map ι =
       EuclideanDomain.gcd (Norm.rawPolynomial levels f)
         (Norm.rawPolynomial levels g)
     rw [← Norm.rawPolynomialHom_apply levels hvalid hinjective hinv,
       ← Norm.rawPolynomialHom_apply levels hvalid hinjective hinv]
-    change (EuclideanDomain.gcd (HexPolyMathlib.toPolynomial f)
-      (HexPolyMathlib.toPolynomial g)).map ι =
+    change (EuclideanDomain.gcd (HexPolyTheory.toPolynomial f)
+      (HexPolyTheory.toPolynomial g)).map ι =
       EuclideanDomain.gcd
-        ((HexPolyMathlib.toPolynomial f).map ι)
-        ((HexPolyMathlib.toPolynomial g).map ι)
-    exact (Polynomial.gcd_map (p := HexPolyMathlib.toPolynomial f)
-      (q := HexPolyMathlib.toPolynomial g) ι).symm
+        ((HexPolyTheory.toPolynomial f).map ι)
+        ((HexPolyTheory.toPolynomial g).map ι)
+    exact (Polynomial.gcd_map (p := HexPolyTheory.toPolynomial f)
+      (q := HexPolyTheory.toPolynomial g) ι).symm
   calc
     (Norm.rawPolynomial levels
         (Norm.monic (DensePoly.gcd f g))).rootMultiplicity z =
@@ -263,18 +263,18 @@ theorem rawPolynomial_div_mul
     DensePoly.mod_eq_zero_of_dvd dividend divisor hdivisor
   have hreconstruct := DensePoly.div_mul_add_mod dividend divisor
   rw [hmod] at hreconstruct
-  have hsource := congrArg HexPolyMathlib.toPolynomial hreconstruct
-  simp only [HexPolyMathlib.toPolynomial_add,
-    HexPolyMathlib.toPolynomial_mul, HexPolyMathlib.toPolynomial_zero,
+  have hsource := congrArg HexPolyTheory.toPolynomial hreconstruct
+  simp only [HexPolyTheory.toPolynomial_add,
+    HexPolyTheory.toPolynomial_mul, HexPolyTheory.toPolynomial_zero,
     add_zero] at hsource
   let ι := LevelSemantics.coeffHom levels hvalid hinjective hinv
   have hmapped := congrArg (Polynomial.map ι) hsource
   rw [← Norm.rawPolynomialHom_apply levels hvalid hinjective hinv,
     ← Norm.rawPolynomialHom_apply levels hvalid hinjective hinv,
     ← Norm.rawPolynomialHom_apply levels hvalid hinjective hinv]
-  change (HexPolyMathlib.toPolynomial (dividend / divisor)).map ι *
-      (HexPolyMathlib.toPolynomial divisor).map ι =
-    (HexPolyMathlib.toPolynomial dividend).map ι
+  change (HexPolyTheory.toPolynomial (dividend / divisor)).map ι *
+      (HexPolyTheory.toPolynomial divisor).map ι =
+    (HexPolyTheory.toPolynomial dividend).map ι
   simpa only [Polynomial.map_mul] using hmapped
 
 /-- An exact executable quotient of a semantically nonzero dividend is
@@ -513,11 +513,11 @@ theorem natDegree_rawPolynomial
   let : Field (Arithmetic.Coeff levels) :=
     Norm.coeffFieldPoly levels hvalid hinjective hinv
   rw [← Norm.rawPolynomialHom_apply levels hvalid hinjective hinv]
-  change ((HexPolyMathlib.toPolynomial f).map
+  change ((HexPolyTheory.toPolynomial f).map
     (LevelSemantics.coeffHom levels hvalid hinjective hinv)).natDegree = _
   rw [Polynomial.natDegree_map_eq_of_injective
       (LevelSemantics.coeffHom levels hvalid hinjective hinv).injective,
-    HexPolyMathlib.natDegree_toPolynomial]
+    HexPolyTheory.natDegree_toPolynomial]
 
 /-- The raw complex interpretation is coefficientwise mapping through the
 coefficient denotation homomorphism. -/
@@ -526,7 +526,7 @@ theorem rawPolynomial_eq_map
     letI : Field (Arithmetic.Coeff levels) :=
       Norm.coeffFieldPoly levels hvalid hinjective hinv
     Norm.rawPolynomial levels f =
-      (HexPolyMathlib.toPolynomial f).map
+      (HexPolyTheory.toPolynomial f).map
         (LevelSemantics.coeffHom levels hvalid hinjective hinv) := by
   let : Field (Arithmetic.Coeff levels) :=
     Norm.coeffFieldPoly levels hvalid hinjective hinv
@@ -888,7 +888,7 @@ theorem yunAux_monic
               intro hzero
               apply hcomponentNe
               simp [component, hzero, Norm.monic]
-            rw [← HexPolyMathlib.leadingCoeff_toPolynomial]
+            rw [← HexPolyTheory.leadingCoeff_toPolynomial]
             exact (toPolynomial_monic_monic levels hvalid hinjective hinv
               (w / shared) hquotientNe).leadingCoeff
         · exact ih _ _ _ _ hOut
@@ -1126,15 +1126,15 @@ theorem yun_coprime
     Polynomial.natDegree_pos_iff_degree_pos.mp htargetDegree
   obtain ⟨z, hz⟩ := IsAlgClosed.exists_root
     (Norm.rawPolynomial levels g) (ne_of_gt hdegreeComplex)
-  have hgAssociated : Associated (HexPolyMathlib.toPolynomial g)
-      (EuclideanDomain.gcd (HexPolyMathlib.toPolynomial pa)
-        (HexPolyMathlib.toPolynomial pb)) :=
-    HexPolyMathlib.toPolynomial_gcd_associated pa pb
-  have hgDvdA : HexPolyMathlib.toPolynomial g ∣
-      HexPolyMathlib.toPolynomial pa :=
+  have hgAssociated : Associated (HexPolyTheory.toPolynomial g)
+      (EuclideanDomain.gcd (HexPolyTheory.toPolynomial pa)
+        (HexPolyTheory.toPolynomial pb)) :=
+    HexPolyTheory.toPolynomial_gcd_associated pa pb
+  have hgDvdA : HexPolyTheory.toPolynomial g ∣
+      HexPolyTheory.toPolynomial pa :=
     hgAssociated.dvd.trans (EuclideanDomain.gcd_dvd_left _ _)
-  have hgDvdB : HexPolyMathlib.toPolynomial g ∣
-      HexPolyMathlib.toPolynomial pb :=
+  have hgDvdB : HexPolyTheory.toPolynomial g ∣
+      HexPolyTheory.toPolynomial pb :=
     hgAssociated.dvd.trans (EuclideanDomain.gcd_dvd_right _ _)
   have htargetDvdA : Norm.rawPolynomial levels g ∣
       Norm.rawPolynomial levels pa := by
@@ -1383,9 +1383,9 @@ theorem yun_rawPolynomial_monic
       (Factor.rawPoly levels entry.1)).Monic := by
   let : Field (Arithmetic.Coeff levels) :=
     Norm.coeffFieldPoly levels hvalid hinjective hinv
-  have hsource : (HexPolyMathlib.toPolynomial
+  have hsource : (HexPolyTheory.toPolynomial
       (Factor.rawPoly levels entry.1)).Monic := by
-    rw [Polynomial.Monic.def, HexPolyMathlib.leadingCoeff_toPolynomial,
+    rw [Polynomial.Monic.def, HexPolyTheory.leadingCoeff_toPolynomial,
       yun_monic hvalid hinjective hinv f entry hentry]
   rw [rawPolynomial_eq_map hvalid hinjective hinv]
   exact hsource.map

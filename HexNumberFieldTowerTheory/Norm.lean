@@ -7,9 +7,9 @@ Authors: Kim Morrison
 module
 
 import Mathlib.Data.Rat.Cast.Defs
-public import HexNumberFieldTowerMathlib.Arithmetic
-public import HexNumberFieldTowerMathlib.NormCore
-public import HexResultantMathlib
+public import HexNumberFieldTowerTheory.Arithmetic
+public import HexNumberFieldTowerTheory.NormCore
+public import HexResultantTheory
 
 public section
 
@@ -87,10 +87,10 @@ theorem toPolynomial_eq_polynomial (T : NumberTower) (f : Poly T) :
 /-- Tower-polynomial interpretation is coefficientwise mapping through the
 certified complex embedding. -/
 theorem toPolynomial_eq_map (T : NumberTower) (f : Poly T) :
-    T.toPolynomial f = (HexPolyMathlib.toPolynomial f).map T.embedding := by
+    T.toPolynomial f = (HexPolyTheory.toPolynomial f).map T.embedding := by
   ext n
   rw [coeff_toPolynomial, Polynomial.coeff_map,
-    HexPolyMathlib.coeff_toPolynomial]
+    HexPolyTheory.coeff_toPolynomial]
   rfl
 
 /-- The fixed complex interpretation distinguishes executable tower
@@ -110,7 +110,7 @@ theorem natDegree_toPolynomial (T : NumberTower) (f : Poly T) :
     (T.toPolynomial f).natDegree = f.natDegree := by
   rw [toPolynomial_eq_map,
     Polynomial.natDegree_map_eq_of_injective T.embedding.injective,
-    HexPolyMathlib.natDegree_toPolynomial]
+    HexPolyTheory.natDegree_toPolynomial]
 
 /-- Semantic interpretation sends the executable zero polynomial to `0`. -/
 @[simp]
@@ -131,21 +131,21 @@ addition in `Polynomial ℂ`. -/
 @[simp]
 theorem toPolynomial_add (T : NumberTower) (f g : Poly T) :
     T.toPolynomial (f + g) = T.toPolynomial f + T.toPolynomial g := by
-  simp [toPolynomial_eq_map, HexPolyMathlib.toPolynomial_add]
+  simp [toPolynomial_eq_map, HexPolyTheory.toPolynomial_add]
 
 /-- Semantic interpretation turns executable tower-polynomial multiplication
 into multiplication in `Polynomial ℂ`. -/
 @[simp]
 theorem toPolynomial_mul (T : NumberTower) (f g : Poly T) :
     T.toPolynomial (f * g) = T.toPolynomial f * T.toPolynomial g := by
-  simp [toPolynomial_eq_map, HexPolyMathlib.toPolynomial_mul]
+  simp [toPolynomial_eq_map, HexPolyTheory.toPolynomial_mul]
 
 /-- Semantic interpretation sends an executable constant polynomial to the
 constant polynomial on the interpreted coefficient. -/
 @[simp]
 theorem toPolynomial_C (T : NumberTower) (a : Elem T) :
     T.toPolynomial (DensePoly.C a) = Polynomial.C (T.toComplex a) := by
-  rw [toPolynomial_eq_map, HexPolyMathlib.toPolynomial_C,
+  rw [toPolynomial_eq_map, HexPolyTheory.toPolynomial_C,
     Polynomial.map_C]
   rfl
 

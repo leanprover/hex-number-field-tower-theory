@@ -6,7 +6,7 @@ Authors: Kim Morrison
 
 module
 
-public import HexNumberFieldTowerMathlib.Flatten
+public import HexNumberFieldTowerTheory.Flatten
 
 public section
 

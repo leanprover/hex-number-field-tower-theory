@@ -7,7 +7,7 @@ Authors: Kim Morrison
 module
 
 public import HexNumberFieldTower
-public import HexNumberFieldMathlib
+public import HexNumberFieldTheory
 
 public section
 
@@ -110,7 +110,7 @@ theorem evalBall_isSome (levels : List Level) (f : Array (Array Rat))
       let value ← RawEvaluation.evalCoords? levels coefficient
       let refined ← value.rep.refineTo? ((prec : Int) + 1)
       some refined.1.1.square.toBall).isSome := by
-    apply HexRootsMathlib.array_mapM_isSome
+    apply HexRootsTheory.array_mapM_isSome
     intro coefficient _
     obtain ⟨value, hvalue⟩ := Option.isSome_iff_exists.mp
       (evalCoords_isSome levels coefficient)
@@ -558,7 +558,7 @@ theorem toComplex_ofRat (T : NumberTower) (q : Rat) :
 
 private theorem polynomial_nil (f : Array (Array Rat)) :
     polynomial [] f =
-      (HexPolyMathlib.toPolynomial (Factor.toRatPoly f)).map
+      (HexPolyTheory.toPolynomial (Factor.toRatPoly f)).map
         (algebraMap Rat ℂ) := by
   ext n
   simp [polynomial, Factor.toRatPoly, denote, Array.getD]
@@ -807,15 +807,15 @@ theorem rawEvalBall_sound (levels : List Level) (f : Array (Array Rat))
   have hcandidateRoot : candidate'.1.root = candidate.toComplex := by
     calc
       candidate'.1.root = candidate.rep.root :=
-        HexRootsMathlib.RefinedIsolation.refineTo_root candidate.rep
+        HexRootsTheory.RefinedIsolation.refineTo_root candidate.rep
           ((prec : Int) + 1) .nkThenPellet hrefine
       _ = candidate.toComplex := rfl
   have hcandidate :
       candidate.toComplex ∈ candidate'.1.1.square.toBall.set := by
     rw [← hcandidateRoot]
     exact DyadicComplexBall.mem_toBall
-      (HexRootsMathlib.RefinedIsolation.root_mem_closedDisc candidate'.1)
-  have hmap := HexRootsMathlib.array_mapM_some_get hballs
+      (HexRootsTheory.RefinedIsolation.root_mem_closedDisc candidate'.1)
+  have hmap := HexRootsTheory.array_mapM_some_get hballs
   have hentry : ∀ (i : Nat) (hi : i < f.size) (hj : i < balls.size),
       LevelSemantics.denote levels f[i] ∈ balls[i].set := by
     intro i hi hj
@@ -826,13 +826,13 @@ theorem rawEvalBall_sound (levels : List Level) (f : Array (Array Rat))
     have hroot : refined.1.root = value.toComplex := by
       calc
         refined.1.root = value.rep.root :=
-          HexRootsMathlib.RefinedIsolation.refineTo_root value.rep
+          HexRootsTheory.RefinedIsolation.refineTo_root value.rep
             ((prec : Int) + 1) .nkThenPellet hrefined
         _ = value.toComplex := rfl
     rw [← LevelSemantics.evalCoords_sound levels f[i] hvalue,
       ← hroot, ← hball]
     exact DyadicComplexBall.mem_toBall
-      (HexRootsMathlib.RefinedIsolation.root_mem_closedDisc refined.1)
+      (HexRootsTheory.RefinedIsolation.root_mem_closedDisc refined.1)
   have hentryD : ∀ (i : Nat) (hi : i < f.size) (hj : i < balls.size),
       LevelSemantics.denote levels (f.getD i #[]) ∈
         (balls.getD i DyadicComplexBall.zero).set := by
@@ -953,14 +953,14 @@ theorem rawEvalBall_radius (levels : List Level) (f : Array (Array Rat))
   have hcandidateRoot : candidate'.1.root = candidate.toComplex := by
     calc
       candidate'.1.root = candidate.rep.root :=
-        HexRootsMathlib.RefinedIsolation.refineTo_root candidate.rep
+        HexRootsTheory.RefinedIsolation.refineTo_root candidate.rep
           ((prec : Int) + 1) .nkThenPellet hrefine
       _ = candidate.toComplex := rfl
   have hcandidate :
       candidate.toComplex ∈ candidate'.1.1.square.toBall.set := by
     rw [← hcandidateRoot]
     exact DyadicComplexBall.mem_toBall
-      (HexRootsMathlib.RefinedIsolation.root_mem_closedDisc candidate'.1)
+      (HexRootsTheory.RefinedIsolation.root_mem_closedDisc candidate'.1)
   have hcandidateNorm : ‖candidate.toComplex‖ ≤
       (2 ^ cauchyExp candidate.p + 1 : Nat) :=
     (AlgebraicRoot.norm_lt_rootBound candidate).le
@@ -969,7 +969,7 @@ theorem rawEvalBall_radius (levels : List Level) (f : Array (Array Rat))
     apply DyadicComplexBall.realRadius_toBall_le_three_quarters
     exact RefinedIsolation.refineTo?_precision candidate.rep
       ((prec : Int) + 1) .nkThenPellet hrefine
-  have hmap := HexRootsMathlib.array_mapM_some_get hballs
+  have hmap := HexRootsTheory.array_mapM_some_get hballs
   have hentry : ∀ (i : Nat) (hi : i < f.size) (hj : i < balls.size),
       LevelSemantics.denote levels f[i] ∈ balls[i].set ∧
         ‖LevelSemantics.denote levels f[i]‖ ≤
@@ -985,7 +985,7 @@ theorem rawEvalBall_radius (levels : List Level) (f : Array (Array Rat))
     have hroot : refined.1.root = value.toComplex := by
       calc
         refined.1.root = value.rep.root :=
-          HexRootsMathlib.RefinedIsolation.refineTo_root value.rep
+          HexRootsTheory.RefinedIsolation.refineTo_root value.rep
             ((prec : Int) + 1) .nkThenPellet hrefined
         _ = value.toComplex := rfl
     refine ⟨?_,
@@ -993,7 +993,7 @@ theorem rawEvalBall_radius (levels : List Level) (f : Array (Array Rat))
     · rw [← LevelSemantics.evalCoords_sound levels f[i] hvalue,
         ← hroot, ← hball]
       exact DyadicComplexBall.mem_toBall
-        (HexRootsMathlib.RefinedIsolation.root_mem_closedDisc refined.1)
+        (HexRootsTheory.RefinedIsolation.root_mem_closedDisc refined.1)
     · rw [← hball]
       have hradius :=
         DyadicComplexBall.realRadius_toBall_le_three_quarters
@@ -1160,7 +1160,7 @@ theorem rawVanishesAt_sound (levels : List Level) (f : Array (Array Rat))
   have hevaluationSound := LevelSemantics.evalPoly_sound levels f
     candidate evaluation hevaluation
   have hcorrect := Hex.retainZero?_sound
-    (HexRootsMathlib.RefinedIsolation.poly_ne_zero evaluation.rep)
+    (HexRootsTheory.RefinedIsolation.poly_ne_zero evaluation.rep)
     (AlgebraicRoot.toComplex_isRoot evaluation)
     (fun prec ball hball => by
       rw [hevaluationSound]
@@ -1213,17 +1213,17 @@ private theorem rational_relation_vanishes (level : Level) (lower : List Level)
       level.root.toComplex = 0 := by
   obtain ⟨rfl, original, checked, hp, hrelation⟩ := h
   rw [LevelSemantics.polynomial_nil, hrelation,
-    HexPolyMathlib.toPolynomial_scale,
-    HexPolyZMathlib.toPolynomial_toRatPoly,
+    HexPolyTheory.toPolynomial_scale,
+    HexPolyZTheory.toPolynomial_toRatPoly,
     Polynomial.map_mul, Polynomial.map_C, Polynomial.eval_mul,
     Polynomial.eval_C]
   have hcomp :
       (algebraMap Rat ℂ).comp (Int.castRingHom Rat) =
         Int.castRingHom ℂ := RingHom.ext_int _ _
   have hpoly :
-      (HexPolyZMathlib.toPolyℚ level.root.p).map (algebraMap Rat ℂ) =
-        HexRootsMathlib.toPolyℂ level.root.p := by
-    dsimp [HexPolyZMathlib.toPolyℚ, HexRootsMathlib.toPolyℂ]
+      (HexPolyZTheory.toPolyℚ level.root.p).map (algebraMap Rat ℂ) =
+        HexRootsTheory.toPolyℂ level.root.p := by
+    dsimp [HexPolyZTheory.toPolyℚ, HexRootsTheory.toPolyℂ]
     rw [Polynomial.map_map, hcomp]
   rw [hpoly, AlgebraicRoot.toComplex_isRoot]
   simp

@@ -1,6 +1,6 @@
-# hex-number-field-tower-mathlib (depends on hex-number-field-tower + hex-number-field-mathlib + hex-resultant-mathlib + hex-berlekamp-zassenhaus-mathlib + hex-row-reduce-mathlib)
+# hex-number-field-tower-theory (depends on hex-number-field-tower + hex-number-field-theory + hex-resultant-theory + hex-berlekamp-zassenhaus-theory + hex-row-reduce-theory)
 
-Mathlib companion for `hex-number-field-tower`. It interprets every validated
+Theory companion for `hex-number-field-tower`. It interprets every validated
 tower as a finite extension of `ℚ` with a fixed embedding into `ℂ`, proves the
 coordinate field operations, and verifies Trager factorization, adjoining,
 splitting fields, and primitive-element flattening.
@@ -136,7 +136,7 @@ substitute: for example, in `ℚ(√2, √3)`, a factor defined over `ℚ(√3)`
 duplicated by the unused `√2` embeddings, so every absolute norm after shifting
 only by `√3` has repeated factors.
 
-The vanishing criterion of `hex-resultant-mathlib`
+The vanishing criterion of `hex-resultant-theory`
 (`resultant_eq_zero_iff_common_root`) is insufficient for steps 2 and 5; they
 rest on its full value correspondence
 (`resultant_eq_leadingCoeff_mul_prod_roots`).
@@ -248,7 +248,7 @@ Items 3 through 7 rest on that resultant value correspondence.
 ## File organisation
 
 ```text
-HexNumberFieldTowerMathlib/
+HexNumberFieldTowerTheory/
   Basic.lean         : semantic tower and embeddings
   ArithmeticCore/    : generic coordinate and field correspondence
   ArithmeticCore.lean: aggregate for the arithmetic proof modules

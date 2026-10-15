@@ -6,7 +6,7 @@ Authors: Kim Morrison
 
 module
 
-public import HexNumberFieldTowerMathlib.Adjoin
+public import HexNumberFieldTowerTheory.Adjoin
 
 public section
 
@@ -78,7 +78,7 @@ private theorem iterated_isRoot (levels : List Level)
 
 private theorem basePolynomial (f : Array (Array Rat)) :
     rawPolynomial [] (Factor.rawPoly [] f) =
-      (HexPolyMathlib.toPolynomial (Factor.toRatPoly f)).map
+      (HexPolyTheory.toPolynomial (Factor.toRatPoly f)).map
         (algebraMap Rat ℂ) := by
   let : Field (Arithmetic.Coeff []) := LevelSemantics.coeffFieldNil
   have hvalidNil : LevelsValid [] := by exact trivial
@@ -104,7 +104,7 @@ private theorem basePolynomial (f : Array (Array Rat)) :
 iterated norm. -/
 theorem iterated_isRoot_toRat (T : NumberTower) (f : Poly T) (z : ℂ)
     (hroot : (T.toPolynomial f).IsRoot z) :
-    ((HexPolyMathlib.toPolynomial
+    ((HexPolyTheory.toPolynomial
       (Factor.toRatPoly (iterated T.levels.toList
         (f.toArray.map coeffs)))).map (algebraMap Rat ℂ)).IsRoot z := by
   have hraw : (rawPolynomial T.levels.toList
@@ -120,12 +120,12 @@ private theorem toRatPoly_ne_zero (f : Array (Array Rat))
   let : Field (Arithmetic.Coeff []) := LevelSemantics.coeffFieldNil
   intro hzero
   have hmap := LevelSemantics.map_rawPoly_nil f
-  rw [hzero, HexPolyMathlib.toPolynomial_zero] at hmap
-  have hrawPoly : HexPolyMathlib.toPolynomial (Factor.rawPoly [] f) = 0 :=
+  rw [hzero, HexPolyTheory.toPolynomial_zero] at hmap
+  have hrawPoly : HexPolyTheory.toPolynomial (Factor.rawPoly [] f) = 0 :=
     (Polynomial.map_eq_zero_iff
       LevelSemantics.coeffRatEquiv.injective).mp hmap
   apply hf
-  exact (HexPolyMathlib.equiv
+  exact (HexPolyTheory.equiv
     (R := Arithmetic.Coeff [])).injective hrawPoly
 
 end Norm
@@ -140,18 +140,18 @@ private theorem rawPoly_ne_zero (T : NumberTower) (f : Poly T) (hf : f ≠ 0) :
 
 private theorem primitivePart_isRoot (p : DensePoly Rat) (hp : p ≠ 0)
     {z : ℂ}
-    (hz : ((HexPolyMathlib.toPolynomial p).map
+    (hz : ((HexPolyTheory.toPolynomial p).map
       (algebraMap Rat ℂ)).IsRoot z) :
-    (HexRootsMathlib.toPolyℂ (ZPoly.ratPolyPrimitivePart p)).IsRoot z := by
+    (HexRootsTheory.toPolyℂ (ZPoly.ratPolyPrimitivePart p)).IsRoot z := by
   obtain ⟨unit, hunit⟩ := ZPoly.ratPolyPrimitivePart_rational_associate p
   have hunitNe : unit ≠ 0 := by
     intro hzero
     apply hp
     rw [hunit, hzero]
     simp
-  have hpoly := congrArg HexPolyMathlib.toPolynomial hunit
-  rw [HexPolyMathlib.toPolynomial_scale,
-    HexPolyZMathlib.toPolynomial_toRatPoly] at hpoly
+  have hpoly := congrArg HexPolyTheory.toPolynomial hunit
+  rw [HexPolyTheory.toPolynomial_scale,
+    HexPolyZTheory.toPolynomial_toRatPoly] at hpoly
   have hpolyComplex := congrArg
     (fun q : Polynomial Rat => q.map (algebraMap Rat ℂ)) hpoly
   have hcomp : (algebraMap Rat ℂ).comp (Int.castRingHom Rat) =
@@ -161,7 +161,7 @@ private theorem primitivePart_isRoot (p : DensePoly Rat) (hp : p ≠ 0)
   rw [hpolyComplex] at hz
   change Polynomial.eval z
       (Polynomial.C ((unit : Rat) : ℂ) *
-        HexRootsMathlib.toPolyℂ (ZPoly.ratPolyPrimitivePart p)) = 0 at hz
+        HexRootsTheory.toPolyℂ (ZPoly.ratPolyPrimitivePart p)) = 0 at hz
   rw [Polynomial.eval_mul, Polynomial.eval_C] at hz
   exact (mul_eq_zero.mp hz).resolve_left (by exact_mod_cast hunitNe)
 
@@ -336,16 +336,16 @@ theorem factorRoot?_isSome (T : NumberTower) (f : Poly T)
   obtain ⟨z, hz⟩ := Complex.exists_root
     (Polynomial.natDegree_pos_iff_degree_pos.mp hsemanticDegree)
   have habsoluteRoot :
-      ((HexPolyMathlib.toPolynomial absolute).map
+      ((HexPolyTheory.toPolynomial absolute).map
         (algebraMap Rat ℂ)).IsRoot z := by
     simpa [absolute] using Norm.iterated_isRoot_toRat T f z hz
   have hprimitiveRoot :
-      (HexRootsMathlib.toPolyℂ primitive).IsRoot z :=
+      (HexRootsTheory.toPolyℂ primitive).IsRoot z :=
     primitivePart_isRoot absolute habsolute habsoluteRoot
   have hcoreRoot :
-      (HexRootsMathlib.toPolyℂ (factorEliminant f)).IsRoot z := by
+      (HexRootsTheory.toPolyℂ (factorEliminant f)).IsRoot z := by
     simpa [factorEliminant, absolute, primitive] using
-      HexPolyZMathlib.isRoot_squareFreeCore hprimitive hprimitiveRoot
+      HexPolyZTheory.isRoot_squareFreeCore hprimitive hprimitiveRoot
   have hcoreNe : factorEliminant f ≠ 0 := by
     simpa [factorEliminant, absolute, primitive] using
       ZPoly.squareFreeCore_ne_zero primitive hprimitive
@@ -363,12 +363,12 @@ theorem factorRoot?_isSome (T : NumberTower) (f : Poly T)
     exact hcoreNe ((DensePoly.size_eq_zero_iff _).mp hsize)
   have hdegree : 0 < (factorEliminant f).natDegree := by
     by_contra hnot
-    exact HexRootsMathlib.not_isRoot_of_degree_not_pos
+    exact HexRootsTheory.not_isRoot_of_degree_not_pos
       (factorEliminant f) hcoreSize hnot z hcoreRoot
   unfold factorRoot?
   dsimp only
   rw [dite_eq_left hprim, dite_eq_left hpos, dite_eq_left hdegree, dite_eq_left hsimple]
-  have hisolateSome := HexRootsMathlib.isolateComplexRoots?_isSome
+  have hisolateSome := HexRootsTheory.isolateComplexRoots?_isSome
     (factorEliminant f) hsimple hcoreNe
     (separationDepth (factorEliminant f) : Int) .nkThenPellet
   cases hisolate : ZPoly.isolateComplexRoots? (factorEliminant f) hsimple
@@ -376,11 +376,11 @@ theorem factorRoot?_isSome (T : NumberTower) (f : Poly T)
   | none => simp [hisolate] at hisolateSome
   | some isolations =>
       simp only [Option.bind_eq_bind, Option.bind_some]
-      have hmapSome := HexRootsMathlib.array_mapM_isSome
+      have hmapSome := HexRootsTheory.array_mapM_isSome
         (xs := isolations) (f := DyadicRootIsolation.toRefined?)
         (fun iso hiso => by
           unfold DyadicRootIsolation.toRefined?
-          rw [dite_eq_left (HexRootsMathlib.isolateComplexRoots?_refined
+          rw [dite_eq_left (HexRootsTheory.isolateComplexRoots?_refined
             (factorEliminant f) hsimple
             (separationDepth (factorEliminant f) : Int)
             .nkThenPellet hisolate iso hiso)]
@@ -391,14 +391,14 @@ theorem factorRoot?_isSome (T : NumberTower) (f : Poly T)
       | some refined =>
           simp only [Option.bind_some]
           obtain ⟨iso, hiso, hisoRoot⟩ :=
-            HexRootsMathlib.isolateComplexRoots?_root_mem_of_pos
+            HexRootsTheory.isolateComplexRoots?_root_mem_of_pos
               (factorEliminant f) hsimple
               (separationDepth (factorEliminant f) : Int)
               .nkThenPellet hdegree hisolate hcoreRoot
           obtain ⟨i, hiList, hidx⟩ := List.getElem_of_mem hiso
           have hi : i < isolations.size := by simpa using hiList
           obtain ⟨hmapSize, hmapGet⟩ :=
-            HexRootsMathlib.array_mapM_some_get hrefined
+            HexRootsTheory.array_mapM_some_get hrefined
           have hj : i < refined.size := by
             simpa [← hmapSize] using hi
           have hto := hmapGet i hi hj
@@ -411,8 +411,8 @@ theorem factorRoot?_isSome (T : NumberTower) (f : Poly T)
             rw [← hidx]
             exact (Array.getElem_toList hi).symm
           have hrefinedRoot :
-              HexRootsMathlib.RefinedIsolation.root refined[i] = z := by
-            change HexRootsMathlib.DyadicRootIsolation.root refined[i].1 = z
+              HexRootsTheory.RefinedIsolation.root refined[i] = z := by
+            change HexRootsTheory.DyadicRootIsolation.root refined[i].1 = z
             rw [hrawIso, harrIso]
             exact hisoRoot
           let candidate : AlgebraicRoot :=
@@ -469,7 +469,7 @@ private theorem linearRoots?_get {T : NumberTower}
             (-(factors[i].1.coeff 0) / factors[i].1.leadingCoeff,
               factors[i].2) := by
   unfold linearRoots? at h
-  obtain ⟨hsize, hget⟩ := HexRootsMathlib.array_mapM_some_get h
+  obtain ⟨hsize, hget⟩ := HexRootsTheory.array_mapM_some_get h
   refine ⟨hsize, ?_⟩
   intro i hi hj
   have hentry := hget i hi hj
@@ -838,11 +838,11 @@ private theorem not_contains_factor_root {T : NumberTower} {f : Poly T}
     ¬ Extension.AlreadyContains T candidate := by
   unfold Extension.AlreadyContains
   rintro ⟨a, ha⟩
-  have hrelative : (HexPolyMathlib.toPolynomial entry.1).eval a = 0 := by
+  have hrelative : (HexPolyTheory.toPolynomial entry.1).eval a = 0 := by
     apply toComplex_injective T
     rw [map_zero T]
     change T.embedding
-        ((HexPolyMathlib.toPolynomial entry.1).eval a) = 0
+        ((HexPolyTheory.toPolynomial entry.1).eval a) = 0
     rw [← Polynomial.eval_map_apply, ← toPolynomial_eq_map]
     change Polynomial.eval (T.toComplex a)
       (T.toPolynomial entry.1) = 0
@@ -850,8 +850,8 @@ private theorem not_contains_factor_root {T : NumberTower} {f : Poly T}
     exact hroot
   have hirreducible := (hsound.2.1 entry hentry).2.2.toMathlib
   have hdegreeNe :
-      (HexPolyMathlib.toPolynomial entry.1).natDegree ≠ 1 := by
-    rw [HexPolyMathlib.natDegree_toPolynomial]
+      (HexPolyTheory.toPolynomial entry.1).natDegree ≠ 1 := by
+    rw [HexPolyTheory.natDegree_toPolynomial]
     omega
   exact hirreducible.not_isRoot_of_natDegree_ne_one hdegreeNe hrelative
 
@@ -890,7 +890,7 @@ private theorem nonlinear_find_isSome {T : NumberTower} {f : Poly T}
   | none =>
       have hmapSome : (linearRoots? r.factors).isSome := by
         unfold linearRoots?
-        apply HexRootsMathlib.array_mapM_isSome
+        apply HexRootsTheory.array_mapM_isSome
         intro entry hentry
         have hentrySound := hsound.2.1 entry hentry
         have hnot : ¬1 < entry.1.natDegree := by
@@ -899,7 +899,7 @@ private theorem nonlinear_find_isSome {T : NumberTower} {f : Poly T}
         have hdegree : entry.1.natDegree = 1 := by
           have hirreducible := hentrySound.2.2.toMathlib
           have hpositive : 0 < entry.1.natDegree := by
-            simpa only [HexPolyMathlib.natDegree_toPolynomial] using
+            simpa only [HexPolyTheory.natDegree_toPolynomial] using
               hirreducible.natDegree_pos
           omega
         simp [hdegree, hentrySound.2.1]

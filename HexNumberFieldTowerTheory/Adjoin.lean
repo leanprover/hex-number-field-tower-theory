@@ -6,7 +6,7 @@ Authors: Kim Morrison
 
 module
 
-public import HexNumberFieldTowerMathlib.Factor
+public import HexNumberFieldTowerTheory.Factor
 
 public section
 
@@ -110,11 +110,11 @@ end Extension
 /-- Lifting an integer polynomial into a tower preserves its complex
 coefficient polynomial. -/
 theorem toPolynomial_liftZPoly (T : NumberTower) (p : ZPoly) :
-    T.toPolynomial (liftZPoly T p) = HexRootsMathlib.toPolyℂ p := by
+    T.toPolynomial (liftZPoly T p) = HexRootsTheory.toPolyℂ p := by
   ext n
   rw [coeff_toPolynomial]
-  simp only [liftZPoly, DensePoly.coeff_ofCoeffs, HexRootsMathlib.toPolyℂ,
-    Polynomial.coeff_map, HexPolyMathlib.coeff_toPolynomial]
+  simp only [liftZPoly, DensePoly.coeff_ofCoeffs, HexRootsTheory.toPolyℂ,
+    Polynomial.coeff_map, HexPolyTheory.coeff_toPolynomial]
   by_cases h : n < p.size
   · simp [Array.getD, h, toComplex_ofRat,
       ← DensePoly.toArray_getD p n]
@@ -131,24 +131,24 @@ open scoped TowerField
 
 private theorem liftZPoly_separable (T : NumberTower)
     (candidate : AlgebraicRoot) :
-    (HexPolyMathlib.toPolynomial (liftZPoly T candidate.p)).Separable := by
+    (HexPolyTheory.toPolynomial (liftZPoly T candidate.p)).Separable := by
   have hpne : candidate.p ≠ 0 := by
     intro hp
     have hdegree := candidate.pos_degree
     rw [hp] at hdegree
     simp at hdegree
-  have hcomplex : (HexRootsMathlib.toPolyℂ candidate.p).Separable := by
+  have hcomplex : (HexRootsTheory.toPolyℂ candidate.p).Separable := by
     have hmapped :=
-      (HexRootsMathlib.HasOnlySimpleRoots.separable candidate.squarefree hpne).map
+      (HexRootsTheory.HasOnlySimpleRoots.separable candidate.squarefree hpne).map
         (f := algebraMap Rat ℂ)
     have hcomp :
         (algebraMap Rat ℂ).comp (Int.castRingHom Rat) =
           Int.castRingHom ℂ := RingHom.ext_int _ _
-    simpa [HexPolyZMathlib.toPolyℚ, HexRootsMathlib.toPolyℂ,
+    simpa [HexPolyZTheory.toPolyℚ, HexRootsTheory.toPolyℂ,
       Polynomial.map_map, hcomp] using hmapped
   have hmapped :
-      (HexPolyMathlib.toPolynomial (liftZPoly T candidate.p)).map
-          T.embedding = HexRootsMathlib.toPolyℂ candidate.p := by
+      (HexPolyTheory.toPolynomial (liftZPoly T candidate.p)).map
+          T.embedding = HexRootsTheory.toPolyℂ candidate.p := by
     rw [← toPolynomial_eq_map, toPolynomial_liftZPoly]
   apply (Polynomial.separable_map T.embedding).mp
   rwa [hmapped]
@@ -156,11 +156,11 @@ private theorem liftZPoly_separable (T : NumberTower)
 private theorem factorPower_dvd_reconstruct {T : NumberTower} {f : Poly T}
     (r : Factorization T f) (entry : Poly T × Nat)
     (hentry : entry ∈ r.factors.toList) :
-    HexPolyMathlib.toPolynomial entry.1 ^ entry.2 ∣
-      HexPolyMathlib.toPolynomial r.reconstruct := by
-  have hmem : HexPolyMathlib.toPolynomial entry.1 ^ entry.2 ∈
+    HexPolyTheory.toPolynomial entry.1 ^ entry.2 ∣
+      HexPolyTheory.toPolynomial r.reconstruct := by
+  have hmem : HexPolyTheory.toPolynomial entry.1 ^ entry.2 ∈
       r.factors.toList.map fun factor =>
-        HexPolyMathlib.toPolynomial factor.1 ^ factor.2 := by
+        HexPolyTheory.toPolynomial factor.1 ^ factor.2 := by
     exact List.mem_map.mpr ⟨entry, hentry, rfl⟩
   obtain ⟨q, hq⟩ := List.dvd_prod hmem
   refine ⟨Polynomial.C r.scalar * q, ?_⟩
@@ -169,17 +169,17 @@ private theorem factorPower_dvd_reconstruct {T : NumberTower} {f : Poly T}
 
 private theorem factor_multiplicity_one {T : NumberTower} {f : Poly T}
     (r : Factorization T f) (hsound : r.Sound)
-    (hseparable : (HexPolyMathlib.toPolynomial f).Separable)
+    (hseparable : (HexPolyTheory.toPolynomial f).Separable)
     (entry : Poly T × Nat) (hentry : entry ∈ r.factors.toList) :
     entry.2 = 1 := by
   have hentrySound := hsound.2.1 entry hentry
   have hpowSeparable :
-      (HexPolyMathlib.toPolynomial entry.1 ^ entry.2).Separable := by
+      (HexPolyTheory.toPolynomial entry.1 ^ entry.2).Separable := by
     apply hseparable.of_dvd
     rw [← hsound.1]
     exact factorPower_dvd_reconstruct r entry hentry
   have hirreducible :
-      Irreducible (HexPolyMathlib.toPolynomial entry.1) :=
+      Irreducible (HexPolyTheory.toPolynomial entry.1) :=
     (polynomialIrreducible_iff T entry.1).mp hentrySound.2.2
   exact (hpowSeparable.of_pow hirreducible.not_isUnit
     (Nat.ne_of_gt hentrySound.2.1)).2
@@ -202,11 +202,11 @@ private theorem exists_vanishing_factor (T : NumberTower)
     have hinput : T.toPolynomial (liftZPoly T candidate.p) = 0 := by
       rw [← hsound.1]
       exact hreconstruct
-    have hpne := HexRootsMathlib.RefinedIsolation.poly_ne_zero candidate.rep
+    have hpne := HexRootsTheory.RefinedIsolation.poly_ne_zero candidate.rep
     have hsize : candidate.p.size ≠ 0 := by
       intro hsize
       exact hpne ((DensePoly.size_eq_zero_iff candidate.p).mp hsize)
-    exact HexRootsMathlib.toPolyℂ_ne_zero candidate.p hsize <|
+    exact HexRootsTheory.toPolyℂ_ne_zero candidate.p hsize <|
       (toPolynomial_liftZPoly T candidate.p).symm.trans hinput
   have hproduct : Polynomial.eval candidate.toComplex
       ((r.factors.toList.map fun factor =>
@@ -269,30 +269,30 @@ private theorem vanishing_factor_unique {T : NumberTower} {f : Poly T}
     (factor_fsts_pairwise r hsound).forall ha hb hab
   have haSound := hsound.2.1 a ha
   have hbSound := hsound.2.1 b hb
-  have hpMonic : (HexPolyMathlib.toPolynomial a.1).Monic := by
+  have hpMonic : (HexPolyTheory.toPolynomial a.1).Monic := by
     rw [Polynomial.Monic.def,
-      HexPolyMathlib.leadingCoeff_toPolynomial, haSound.1]
-  have hqMonic : (HexPolyMathlib.toPolynomial b.1).Monic := by
+      HexPolyTheory.leadingCoeff_toPolynomial, haSound.1]
+  have hqMonic : (HexPolyTheory.toPolynomial b.1).Monic := by
     rw [Polynomial.Monic.def,
-      HexPolyMathlib.leadingCoeff_toPolynomial, hbSound.1]
+      HexPolyTheory.leadingCoeff_toPolynomial, hbSound.1]
   have hpIrreducible :
-      Irreducible (HexPolyMathlib.toPolynomial a.1) :=
+      Irreducible (HexPolyTheory.toPolynomial a.1) :=
     (polynomialIrreducible_iff T a.1).mp haSound.2.2
   have hqIrreducible :
-      Irreducible (HexPolyMathlib.toPolynomial b.1) :=
+      Irreducible (HexPolyTheory.toPolynomial b.1) :=
     (polynomialIrreducible_iff T b.1).mp hbSound.2.2
   have hnotAssociated : ¬Associated
-      (HexPolyMathlib.toPolynomial a.1)
-      (HexPolyMathlib.toPolynomial b.1) := by
+      (HexPolyTheory.toPolynomial a.1)
+      (HexPolyTheory.toPolynomial b.1) := by
     intro hassociated
     have hpq := Polynomial.eq_of_monic_of_associated
       hpMonic hqMonic hassociated
-    exact hfactorNe (HexPolyMathlib.equiv.injective hpq)
+    exact hfactorNe (HexPolyTheory.equiv.injective hpq)
   have hcoprime : IsCoprime
-      (HexPolyMathlib.toPolynomial a.1)
-      (HexPolyMathlib.toPolynomial b.1) := by
-    rcases dvd_or_isCoprime (HexPolyMathlib.toPolynomial a.1)
-        (HexPolyMathlib.toPolynomial b.1) hpIrreducible with
+      (HexPolyTheory.toPolynomial a.1)
+      (HexPolyTheory.toPolynomial b.1) := by
+    rcases dvd_or_isCoprime (HexPolyTheory.toPolynomial a.1)
+        (HexPolyTheory.toPolynomial b.1) hpIrreducible with
       hdvd | hcoprime
     · exact (hnotAssociated
         (hpIrreducible.associated_of_dvd hqIrreducible hdvd)).elim
@@ -301,18 +301,18 @@ private theorem vanishing_factor_unique {T : NumberTower} {f : Poly T}
   have hevaluated := hmapped.map
     (Polynomial.evalRingHom candidate.toComplex)
   have hza' : Polynomial.eval candidate.toComplex
-      ((HexPolyMathlib.toPolynomial a.1).map T.embedding) = 0 := by
+      ((HexPolyTheory.toPolynomial a.1).map T.embedding) = 0 := by
     rw [← toPolynomial_eq_map]
     exact hza
   have hzb' : Polynomial.eval candidate.toComplex
-      ((HexPolyMathlib.toPolynomial b.1).map T.embedding) = 0 := by
+      ((HexPolyTheory.toPolynomial b.1).map T.embedding) = 0 := by
     rw [← toPolynomial_eq_map]
     exact hzb
   change IsCoprime
       (Polynomial.eval candidate.toComplex
-        ((HexPolyMathlib.toPolynomial a.1).map T.embedding))
+        ((HexPolyTheory.toPolynomial a.1).map T.embedding))
       (Polynomial.eval candidate.toComplex
-        ((HexPolyMathlib.toPolynomial b.1).map T.embedding)) at hevaluated
+        ((HexPolyTheory.toPolynomial b.1).map T.embedding)) at hevaluated
   rw [hza', hzb'] at hevaluated
   exact not_isCoprime_zero_zero hevaluated
 
@@ -780,11 +780,11 @@ theorem adjoin?_sound (T : NumberTower) (candidate : AlgebraicRoot)
       have hnotContains : ¬ Extension.AlreadyContains T candidate := by
         rintro ⟨a, ha⟩
         have hroot :
-            (HexPolyMathlib.toPolynomial selected).eval a = 0 := by
+            (HexPolyTheory.toPolynomial selected).eval a = 0 := by
           apply toComplex_injective T
           rw [map_zero T]
           change T.embedding
-              ((HexPolyMathlib.toPolynomial selected).eval a) = 0
+              ((HexPolyTheory.toPolynomial selected).eval a) = 0
           rw [← Polynomial.eval_map_apply]
           rw [← toPolynomial_eq_map]
           change Polynomial.eval (T.toComplex a)
@@ -793,8 +793,8 @@ theorem adjoin?_sound (T : NumberTower) (candidate : AlgebraicRoot)
           exact hselectedVanish
         have hirreducible := hselectedMeaning.toMathlib
         have hdegreeNe :
-            (HexPolyMathlib.toPolynomial selected).natDegree ≠ 1 := by
-          rw [HexPolyMathlib.natDegree_toPolynomial]
+            (HexPolyTheory.toPolynomial selected).natDegree ≠ 1 := by
+          rw [HexPolyTheory.natDegree_toPolynomial]
           omega
         exact hirreducible.not_isRoot_of_natDegree_ne_one hdegreeNe hroot
       exact ⟨fun hdim => (hdimNe hdim).elim,
@@ -842,10 +842,10 @@ theorem adjoin?_isSome (T : NumberTower) (candidate : AlgebraicRoot) :
     factorization.factors chosen hnodup hchosen hmult htrue hfalse
   have hchosenSound := hsound.2.1 chosen hchosen
   have hchosenIrreducible :
-      Irreducible (HexPolyMathlib.toPolynomial chosen.1) :=
+      Irreducible (HexPolyTheory.toPolynomial chosen.1) :=
     (polynomialIrreducible_iff T chosen.1).mp hchosenSound.2.2
   have hdegree : 0 < chosen.1.natDegree := by
-    rw [← HexPolyMathlib.natDegree_toPolynomial]
+    rw [← HexPolyTheory.natDegree_toPolynomial]
     exact hchosenIrreducible.natDegree_pos
   by_cases hdegreeOne : chosen.1.natDegree = 1
   · unfold adjoin?

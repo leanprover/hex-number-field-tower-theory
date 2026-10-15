@@ -6,7 +6,7 @@ Authors: Kim Morrison
 
 module
 
-public import HexNumberFieldTowerMathlib.Basic
+public import HexNumberFieldTowerTheory.Basic
 
 public section
 
@@ -1374,7 +1374,7 @@ noncomputable def denseMap (lower : List Level) (x : ℂ)
     DensePoly (Arithmetic.Coeff lower) → ℂ := by
   letI : Field (Arithmetic.Coeff lower) :=
     coeffField lower hvalid hinjective hinv
-  exact fun f => (HexPolyMathlib.toPolynomial f).eval₂
+  exact fun f => (HexPolyTheory.toPolynomial f).eval₂
     (coeffHom lower hvalid hinjective hinv) x
 
 /-- Ring-hom evaluation agrees with the prescribed coefficient sum whenever
@@ -1396,7 +1396,7 @@ theorem denseMap_eq_denseEval (lower : List Level) (x : ℂ)
       (coeffHom lower hvalid hinjective hinv)
       (by simpa using hdegree) x,
     denseEval]
-  simp [coeffHom, HexPolyMathlib.coeff_toPolynomial]
+  simp [coeffHom, HexPolyTheory.coeff_toPolynomial]
 
 /-- Dense evaluation preserves multiplication. -/
 theorem denseMap_mul (lower : List Level) (x : ℂ)
@@ -1411,7 +1411,7 @@ theorem denseMap_mul (lower : List Level) (x : ℂ)
         denseMap lower x hvalid hinjective hinv g := by
   let : Field (Arithmetic.Coeff lower) :=
     coeffField lower hvalid hinjective hinv
-  simp [denseMap, HexPolyMathlib.toPolynomial_mul, Polynomial.eval₂_mul]
+  simp [denseMap, HexPolyTheory.toPolynomial_mul, Polynomial.eval₂_mul]
 
 /-- Dense evaluation preserves addition. -/
 theorem denseMap_add (lower : List Level) (x : ℂ)
@@ -1426,7 +1426,7 @@ theorem denseMap_add (lower : List Level) (x : ℂ)
         denseMap lower x hvalid hinjective hinv g := by
   let : Field (Arithmetic.Coeff lower) :=
     coeffField lower hvalid hinjective hinv
-  simp [denseMap, HexPolyMathlib.toPolynomial_add, Polynomial.eval₂_add]
+  simp [denseMap, HexPolyTheory.toPolynomial_add, Polynomial.eval₂_add]
 
 /-- Dense evaluation sends coefficient scaling to scalar multiplication. -/
 theorem denseMap_scale (lower : List Level) (x : ℂ)
@@ -1441,7 +1441,7 @@ theorem denseMap_scale (lower : List Level) (x : ℂ)
       coeffDenote lower c * denseMap lower x hvalid hinjective hinv f := by
   let : Field (Arithmetic.Coeff lower) :=
     coeffField lower hvalid hinjective hinv
-  simp [denseMap, HexPolyMathlib.toPolynomial_scale, Polynomial.eval₂_mul,
+  simp [denseMap, HexPolyTheory.toPolynomial_scale, Polynomial.eval₂_mul,
     coeffHom]
 
 /-- Dense evaluation of a constant is lower-tower denotation. -/

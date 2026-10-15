@@ -7,8 +7,8 @@ Authors: Kim Morrison
 module
 
 import Mathlib.Data.Rat.Cast.Defs
-public import HexNumberFieldTowerMathlib.ArithmeticCore
-public import HexResultantMathlib
+public import HexNumberFieldTowerTheory.ArithmeticCore
+public import HexResultantTheory
 
 public section
 
@@ -320,7 +320,7 @@ noncomputable def rawPolynomialHom (levels : List Level)
   letI : CommRing (DensePoly (Arithmetic.Coeff levels)) := denseCommRing
   exact (Polynomial.mapRingHom
     (LevelSemantics.coeffHom levels hvalid hinjective hinv)).comp
-      (HexPolyMathlib.equiv (R := Arithmetic.Coeff levels)).toRingHom
+      (HexPolyTheory.equiv (R := Arithmetic.Coeff levels)).toRingHom
 
 /-- The bundled ring homomorphism {name}`rawPolynomialHom` agrees pointwise
 with the direct Horner interpretation {name}`rawPolynomial`, so the latter
@@ -357,7 +357,7 @@ theorem rawPolynomial_eq_map (levels : List Level)
     letI : Field (Arithmetic.Coeff levels) :=
       coeffFieldPoly levels hvalid hinjective hinv
     rawPolynomial levels f =
-      (HexPolyMathlib.toPolynomial f).map
+      (HexPolyTheory.toPolynomial f).map
         (LevelSemantics.coeffHom levels hvalid hinjective hinv) := by
   let : Field (Arithmetic.Coeff levels) :=
     coeffFieldPoly levels hvalid hinjective hinv
@@ -377,16 +377,16 @@ theorem rawPolynomial_injective (levels : List Level)
     coeffFieldPoly levels hvalid hinjective hinv
   let : CommRing (DensePoly (Arithmetic.Coeff levels)) := denseCommRing
   intro f g h
-  apply (HexPolyMathlib.equiv
+  apply (HexPolyTheory.equiv
     (R := Arithmetic.Coeff levels)).injective
   apply Polynomial.map_injective
     (LevelSemantics.coeffHom levels hvalid hinjective hinv)
     (LevelSemantics.coeffHom levels hvalid hinjective hinv).injective
   rw [← rawPolynomialHom_apply levels hvalid hinjective hinv,
     ← rawPolynomialHom_apply levels hvalid hinjective hinv] at h
-  change (HexPolyMathlib.toPolynomial f).map
+  change (HexPolyTheory.toPolynomial f).map
       (LevelSemantics.coeffHom levels hvalid hinjective hinv) =
-    (HexPolyMathlib.toPolynomial g).map
+    (HexPolyTheory.toPolynomial g).map
       (LevelSemantics.coeffHom levels hvalid hinjective hinv) at h
   exact h
 
@@ -445,7 +445,7 @@ theorem rawPolynomial_C (levels : List Level)
     coeffFieldPoly levels hvalid hinjective hinv
   let : CommRing (DensePoly (Arithmetic.Coeff levels)) := denseCommRing
   rw [← rawPolynomialHom_apply levels hvalid hinjective hinv]
-  simp [rawPolynomialHom, HexPolyMathlib.toPolynomial_C,
+  simp [rawPolynomialHom, HexPolyTheory.toPolynomial_C,
     LevelSemantics.coeffHom]
 
 /-- Evaluation at a conjugate root, bundled using the proof-local field whose
@@ -553,7 +553,7 @@ theorem conjugatePolynomial_eq_map (level : Level) (lower : List Level)
       coeffFieldPoly (level :: lower) hvalid hinjective
         (LevelSemantics.coeffDenote_inv (level :: lower) hvalid hinjective)
     conjugatePolynomial level lower x f =
-      (HexPolyMathlib.toPolynomial
+      (HexPolyTheory.toPolynomial
         (Factor.rawPoly (level :: lower) f)).map
           (conjugateMap level lower hvalid hinjective x hrelation) := by
   let : Field (Arithmetic.Coeff (level :: lower)) :=
@@ -561,7 +561,7 @@ theorem conjugatePolynomial_eq_map (level : Level) (lower : List Level)
       (LevelSemantics.coeffDenote_inv (level :: lower) hvalid hinjective)
   ext n
   rw [coeff_conjugatePolynomial, Polynomial.coeff_map,
-    HexPolyMathlib.coeff_toPolynomial, Factor.rawPoly,
+    HexPolyTheory.coeff_toPolynomial, Factor.rawPoly,
     DensePoly.coeff_ofCoeffs, conjugateMap_apply]
   by_cases hn : n < f.size
   · have hleft : f.getD n #[] = f[n] := by
@@ -648,26 +648,26 @@ theorem derivative_eq (levels : List Level)
   rw [rawPolynomial_derivative]
   have hmap (g : DensePoly (Arithmetic.Coeff levels)) :
       rawPolynomial levels g =
-        (HexPolyMathlib.toPolynomial g).map
+        (HexPolyTheory.toPolynomial g).map
           (LevelSemantics.coeffHom levels hvalid hinjective hinv) := by
     rw [← rawPolynomialHom_apply levels hvalid hinjective hinv]
     rfl
   rw [hmap f, hmap (DensePoly.derivative f),
-    Polynomial.derivative_map, HexPolyMathlib.toPolynomial_derivative]
+    Polynomial.derivative_map, HexPolyTheory.toPolynomial_derivative]
 
 /-- The nonzero dense gcd test is separability over a field. -/
 private theorem separable_iff {F : Type} [Field F] [DecidableEq F]
     (p : DensePoly F) :
     ((!p.isZero && decide ((DensePoly.gcd p (DensePoly.derivative p)).size ≤ 1)) = true) ↔
-      (HexPolyMathlib.toPolynomial p).Separable := by
+      (HexPolyTheory.toPolynomial p).Separable := by
   let : CommRing (DensePoly F) := denseCommRing
-  let P := HexPolyMathlib.toPolynomial p
+  let P := HexPolyTheory.toPolynomial p
   let d := DensePoly.derivative p
   let g := DensePoly.gcd p d
   let G := EuclideanDomain.gcd P P.derivative
-  have hassociated : Associated (HexPolyMathlib.toPolynomial g) G := by
-    simpa only [g, G, P, d, HexPolyMathlib.toPolynomial_derivative] using
-      HexPolyMathlib.toPolynomial_gcd_associated p d
+  have hassociated : Associated (HexPolyTheory.toPolynomial g) G := by
+    simpa only [g, G, P, d, HexPolyTheory.toPolynomial_derivative] using
+      HexPolyTheory.toPolynomial_gcd_associated p d
   change ((!p.isZero && decide (g.size ≤ 1)) = true) ↔ P.Separable
   simp only [Bool.and_eq_true, Bool.not_eq_true', decide_eq_true_eq]
   constructor
@@ -680,21 +680,21 @@ private theorem separable_iff {F : Type} [Field F] [DecidableEq F]
         rw [hpEq] at hsize
         simp at hsize
       apply hpDense
-      apply (HexPolyMathlib.equiv
+      apply (HexPolyTheory.equiv
         (R := F)).injective
-      change HexPolyMathlib.toPolynomial p =
-        HexPolyMathlib.toPolynomial (0 : DensePoly F)
-      rw [HexPolyMathlib.toPolynomial_zero]
+      change HexPolyTheory.toPolynomial p =
+        HexPolyTheory.toPolynomial (0 : DensePoly F)
+      rw [HexPolyTheory.toPolynomial_zero]
       exact hzero
     have hGne : G ≠ 0 := by
       intro hzero
       exact hpne (EuclideanDomain.gcd_eq_zero_iff.mp hzero).1
-    have hgne : HexPolyMathlib.toPolynomial g ≠ 0 :=
+    have hgne : HexPolyTheory.toPolynomial g ≠ 0 :=
       fun hzero => hGne (hassociated.eq_zero_iff.mp hzero)
-    have hgunit : IsUnit (HexPolyMathlib.toPolynomial g) := by
+    have hgunit : IsUnit (HexPolyTheory.toPolynomial g) := by
       apply Polynomial.isUnit_iff_degree_eq_zero.mpr
       rw [Polynomial.degree_eq_natDegree hgne,
-        (HexPolyZMathlib.size_le_one_iff_natDegree_eq_zero g).mp hgdegree]
+        (HexPolyZTheory.size_le_one_iff_natDegree_eq_zero g).mp hgdegree]
       rfl
     rw [Polynomial.separable_def, ← EuclideanDomain.gcd_isUnit_iff]
     exact hassociated.isUnit_iff.mp hgunit
@@ -703,8 +703,8 @@ private theorem separable_iff {F : Type} [Field F] [DecidableEq F]
     have hpDense : p ≠ 0 := by
       intro hzero
       apply hpne
-      have hmapZero := congrArg HexPolyMathlib.toPolynomial hzero
-      simpa only [P, HexPolyMathlib.toPolynomial_zero] using hmapZero
+      have hmapZero := congrArg HexPolyTheory.toPolynomial hzero
+      simpa only [P, HexPolyTheory.toPolynomial_zero] using hmapZero
     have hpzero : p.isZero = false := by
       rw [DensePoly.isZero_eq_false_iff]
       by_contra hsize
@@ -714,10 +714,10 @@ private theorem separable_iff {F : Type} [Field F] [DecidableEq F]
     have hGunit : IsUnit G := by
       rw [EuclideanDomain.gcd_isUnit_iff]
       exact hseparable
-    have hgunit : IsUnit (HexPolyMathlib.toPolynomial g) :=
+    have hgunit : IsUnit (HexPolyTheory.toPolynomial g) :=
       hassociated.isUnit_iff.mpr hGunit
     refine ⟨hpzero, ?_⟩
-    rw [HexPolyZMathlib.size_le_one_iff_natDegree_eq_zero]
+    rw [HexPolyZTheory.size_le_one_iff_natDegree_eq_zero]
     exact Polynomial.natDegree_eq_zero_of_isUnit hgunit
 
 /-- The executable gcd-based squarefreeness test is exactly ordinary
@@ -735,17 +735,17 @@ theorem isSquarefree_iff (levels : List Level)
     coeffFieldPoly levels hvalid hinjective hinv
   let : CommRing (DensePoly (Arithmetic.Coeff levels)) := denseCommRing
   let p := Factor.rawPoly levels f
-  let P := HexPolyMathlib.toPolynomial p
+  let P := HexPolyTheory.toPolynomial p
   have hboolean : Norm.isSquarefree levels f ↔ P.Separable := by
     cases levels with
     | nil =>
       change ZPoly.ratSquarefree (Factor.toRatPoly f) ↔ _
       rw [ZPoly.ratSquarefree, separable_iff, ← LevelSemantics.map_rawPoly_nil f]
       change IsCoprime
-          ((HexPolyMathlib.toPolynomial (Factor.rawPoly [] f)).map
+          ((HexPolyTheory.toPolynomial (Factor.rawPoly [] f)).map
             LevelSemantics.coeffRatEquiv.toRingHom)
           (Polynomial.derivative
-            ((HexPolyMathlib.toPolynomial (Factor.rawPoly [] f)).map
+            ((HexPolyTheory.toPolynomial (Factor.rawPoly [] f)).map
               LevelSemantics.coeffRatEquiv.toRingHom)) ↔ _
       rw [Polynomial.derivative_map]
       exact Polynomial.isCoprime_map LevelSemantics.coeffRatEquiv.toRingHom
@@ -816,14 +816,14 @@ theorem rawOuter_eq_map (levels : List Level)
     letI : Field (Arithmetic.Coeff levels) :=
       coeffFieldPoly levels hvalid hinjective hinv
     letI : CommRing (DensePoly (Arithmetic.Coeff levels)) := denseCommRing
-    rawOuter levels f = (HexPolyMathlib.toPolynomial f).map
+    rawOuter levels f = (HexPolyTheory.toPolynomial f).map
       (rawPolynomialHom levels hvalid hinjective hinv) := by
   let : Field (Arithmetic.Coeff levels) :=
     coeffFieldPoly levels hvalid hinjective hinv
   let : CommRing (DensePoly (Arithmetic.Coeff levels)) := denseCommRing
   ext n
   rw [coeff_rawOuter, Polynomial.coeff_map,
-    HexPolyMathlib.coeff_toPolynomial,
+    HexPolyTheory.coeff_toPolynomial,
     rawPolynomialHom_apply levels hvalid hinjective hinv]
 
 /-- Specialize a polynomial in the outer elimination variable at the newest
@@ -858,7 +858,7 @@ noncomputable def outerEvalHom (level : Level) (lower : List Level)
   let coefficientHom : DensePoly (Arithmetic.Coeff lower) →+*
       Polynomial (Arithmetic.Coeff (level :: lower)) :=
     (Polynomial.mapRingHom (lowerHom level lower hvalid hinjectiveTop)).comp
-      (HexPolyMathlib.equiv
+      (HexPolyTheory.equiv
         (R := Arithmetic.Coeff lower)).toRingHom
   exact Polynomial.eval₂RingHom coefficientHom
     (Polynomial.C (Factor.topGenerator level lower))
@@ -894,9 +894,9 @@ noncomputable def outerEval (level : Level) (lower : List Level)
   let coefficientHom : DensePoly (Arithmetic.Coeff lower) →+*
       Polynomial (Arithmetic.Coeff (level :: lower)) :=
     (Polynomial.mapRingHom (lowerHom level lower hvalid hinjectiveTop)).comp
-      (HexPolyMathlib.equiv
+      (HexPolyTheory.equiv
         (R := Arithmetic.Coeff lower)).toRingHom
-  exact (HexPolyMathlib.toPolynomial g).eval₂ coefficientHom
+  exact (HexPolyTheory.toPolynomial g).eval₂ coefficientHom
     (Polynomial.C (Factor.topGenerator level lower))
 
 /-- The evaluation homomorphism {name}`outerEvalHom` acts by mapping inner
@@ -917,7 +917,7 @@ theorem outerEvalHom_apply (level : Level) (lower : List Level)
       coeffFieldPoly (level :: lower) hvalid hinjectiveTop hinvTop
     letI : CommRing (DensePoly (Arithmetic.Coeff lower)) := denseCommRing
     outerEvalHom level lower hvalid hinjectiveTop
-        (HexPolyMathlib.toPolynomial g) =
+        (HexPolyTheory.toPolynomial g) =
       outerEval level lower hvalid hinjectiveTop g := by
   rfl
 
@@ -956,7 +956,7 @@ theorem outerEval_map (level : Level) (lower : List Level)
   let lowerPolyHom : DensePoly (Arithmetic.Coeff lower) →+*
       Polynomial (Arithmetic.Coeff (level :: lower)) :=
     (Polynomial.mapRingHom (lowerHom level lower hvalid hinjectiveTop)).comp
-      (HexPolyMathlib.equiv
+      (HexPolyTheory.equiv
         (R := Arithmetic.Coeff lower)).toRingHom
   have hcomp : (Polynomial.mapRingHom topHom).comp lowerPolyHom =
       rawPolynomialHom lower hvalid.2.2 hinjectiveLower hinvLower := by
@@ -972,9 +972,9 @@ theorem outerEval_map (level : Level) (lower : List Level)
     dsimp only [lowerPolyHom]
     rw [RingHom.comp_apply]
     change topHom
-        (((HexPolyMathlib.toPolynomial a).map
+        (((HexPolyTheory.toPolynomial a).map
           (lowerHom level lower hvalid hinjectiveTop)).coeff n) = _
-    rw [Polynomial.coeff_map, HexPolyMathlib.coeff_toPolynomial]
+    rw [Polynomial.coeff_map, HexPolyTheory.coeff_toPolynomial]
     change LevelSemantics.coeffDenote (level :: lower)
         (lowerHom level lower hvalid hinjectiveTop (a.coeff n)) =
       rawToComplex lower (a.coeff n).data
@@ -988,10 +988,10 @@ theorem outerEval_map (level : Level) (lower : List Level)
         Polynomial.C (topHom (Factor.topGenerator level lower)) := by
     change (Polynomial.C (Factor.topGenerator level lower)).map topHom = _
     rw [Polynomial.map_C]
-  change ((HexPolyMathlib.toPolynomial g).eval₂ lowerPolyHom
+  change ((HexPolyTheory.toPolynomial g).eval₂ lowerPolyHom
       (Polynomial.C (Factor.topGenerator level lower))).map topHom = _
   change (Polynomial.mapRingHom topHom)
-      ((HexPolyMathlib.toPolynomial g).eval₂ lowerPolyHom
+      ((HexPolyTheory.toPolynomial g).eval₂ lowerPolyHom
         (Polynomial.C (Factor.topGenerator level lower))) = _
   rw [Polynomial.hom_eval₂]
   rw [hC, hcomp, hgen]
@@ -1016,9 +1016,9 @@ theorem eval_liftCoefficient (level : Level) (lower : List Level)
   let lifted := liftCoefficient level lower a
   have hsize : lifted.size ≤ level.degree := by
     exact (DensePoly.size_ofCoeffs_le _).trans (by simp)
-  have hdegree : (HexPolyMathlib.toPolynomial lifted).natDegree <
+  have hdegree : (HexPolyTheory.toPolynomial lifted).natDegree <
       level.degree := by
-    rw [HexPolyMathlib.natDegree_toPolynomial,
+    rw [HexPolyTheory.natDegree_toPolynomial,
       DensePoly.natDegree_eq_size_sub_one]
     have := Nat.zero_lt_of_lt hvalid.1.1
     omega
@@ -1035,7 +1035,7 @@ theorem eval_liftCoefficient (level : Level) (lower : List Level)
       (Arithmetic.Coeff.ofData lower
         (Arithmetic.block a j (levelsDim lower))) := by
     simp [lifted, liftCoefficient, Array.getD, hj']
-  rw [HexPolyMathlib.coeff_toPolynomial, hcoeff,
+  rw [HexPolyTheory.coeff_toPolynomial, hcoeff,
     rawPolynomialHom_apply lower hvalid.2.2 hinjective hinv,
     rawPolynomial_C lower hvalid.2.2 hinjective hinv]
   simp [LevelSemantics.coeffDenote, Arithmetic.Coeff.ofData,
@@ -1063,7 +1063,7 @@ theorem eval_shiftBase (lower : List Level)
       DensePoly.C (Arithmetic.Coeff.ofData lower #[(-(c : Rat))])]
   change (rawOuter lower base).eval (Polynomial.C x) =
     Polynomial.X - Polynomial.C ((c : ℂ) * x)
-  have hbase : HexPolyMathlib.toPolynomial base =
+  have hbase : HexPolyTheory.toPolynomial base =
       Polynomial.C (DensePoly.monomial 1 1) +
         Polynomial.X * Polynomial.C
           (DensePoly.C (Arithmetic.Coeff.ofData lower
@@ -1078,8 +1078,8 @@ theorem eval_shiftBase (lower : List Level)
       (1 : Arithmetic.Coeff lower).data = 1 :=
     LevelSemantics.coeffDenote_one lower hvalid
   rw [rawOuter_eq_map lower hvalid hinjective hinv, hbase]
-  simp [rawPolynomialHom, HexPolyMathlib.toPolynomial_monomial,
-    HexPolyMathlib.toPolynomial_C, LevelSemantics.coeffHom,
+  simp [rawPolynomialHom, HexPolyTheory.toPolynomial_monomial,
+    HexPolyTheory.toPolynomial_C, LevelSemantics.coeffHom,
     LevelSemantics.coeffDenote, Arithmetic.Coeff.ofData,
     LevelSemantics.denote_fixed,
     LevelSemantics.denote_rat lower hvalid]
@@ -1125,7 +1125,7 @@ theorem eval_shiftedOuter (level : Level) (lower : List Level)
     rw [rawOuter_eq_map lower hvalid.2.2 hinjective hinv,
       rawOuter_eq_map lower hvalid.2.2 hinjective hinv,
       rawOuter_eq_map lower hvalid.2.2 hinjective hinv,
-      HexPolyMathlib.toPolynomial_add, Polynomial.map_add,
+      HexPolyTheory.toPolynomial_add, Polynomial.map_add,
       Polynomial.eval_add]
   have hmul (u v : DensePoly (DensePoly (Arithmetic.Coeff lower))) :
       ψ (u * v) = ψ u * ψ v := by
@@ -1133,7 +1133,7 @@ theorem eval_shiftedOuter (level : Level) (lower : List Level)
     rw [rawOuter_eq_map lower hvalid.2.2 hinjective hinv,
       rawOuter_eq_map lower hvalid.2.2 hinjective hinv,
       rawOuter_eq_map lower hvalid.2.2 hinjective hinv,
-      HexPolyMathlib.toPolynomial_mul, Polynomial.map_mul,
+      HexPolyTheory.toPolynomial_mul, Polynomial.map_mul,
       Polynomial.eval_mul]
   have hfold : ∀ (items : List (Array Rat)),
       ψ (items.foldr (fun coefficient value =>
@@ -1243,7 +1243,7 @@ theorem outerEval_defining (level : Level) (lower : List Level)
           level.root.toComplex = 0 := by
     have hraw : rawPolynomial lower
         (Arithmetic.Coeff.relation level lower) =
-      (HexPolyMathlib.toPolynomial
+      (HexPolyTheory.toPolynomial
         (Arithmetic.Coeff.relation level lower)).map
           (LevelSemantics.coeffHom lower hvalid.2.2
             hinjectiveLower hinvLower) := by
@@ -1301,13 +1301,13 @@ theorem conjugatePolynomial_shiftTop (level : Level)
     coeffFieldPoly (level :: lower) hvalid hinjectiveTop hinvTop
   let conjugate := conjugateMap level lower hvalid hinjectiveTop x hrelation
   have hsource : conjugatePolynomial level lower x f =
-      (HexPolyMathlib.toPolynomial
+      (HexPolyTheory.toPolynomial
         (Factor.rawPoly (level :: lower) f)).map conjugate := by
     simpa [conjugate] using conjugatePolynomial_eq_map level lower hvalid
       hinjectiveTop x hrelation f
   have htarget : conjugatePolynomial level lower x
       (Factor.shiftTop level lower f c) =
-        (HexPolyMathlib.toPolynomial
+        (HexPolyTheory.toPolynomial
           (Factor.rawPoly (level :: lower)
             (Factor.shiftTop level lower f c))).map conjugate := by
     simpa [conjugate] using conjugatePolynomial_eq_map level lower hvalid
@@ -1345,10 +1345,10 @@ theorem conjugatePolynomial_shiftTop (level : Level)
     change (c : ℂ) * LevelSemantics.evalAt level lower x
       (Factor.topGenerator level lower).data = _
     rw [topGenerator_evalAt level lower hvalid x hrelation]
-  have hsubRaw : HexPolyMathlib.toPolynomial substitution =
+  have hsubRaw : HexPolyTheory.toPolynomial substitution =
       Polynomial.X - Polynomial.C delta := by
     ext n
-    rw [HexPolyMathlib.coeff_toPolynomial, Polynomial.coeff_sub]
+    rw [HexPolyTheory.coeff_toPolynomial, Polynomial.coeff_sub]
     rcases n with _ | n
     · simp [substitution, DensePoly.coeff_ofCoeffs, Array.getD]
     · rcases n with _ | n
@@ -1357,11 +1357,11 @@ theorem conjugatePolynomial_shiftTop (level : Level)
           Polynomial.coeff_X_of_ne_one (R := Arithmetic.Coeff
             (level :: lower)) (show n + 1 + 1 ≠ 1 by omega)]
         rfl
-  have hsub : (HexPolyMathlib.toPolynomial substitution).map conjugate =
+  have hsub : (HexPolyTheory.toPolynomial substitution).map conjugate =
       Polynomial.X - Polynomial.C ((c : ℂ) * x) := by
     rw [hsubRaw, Polynomial.map_sub, Polynomial.map_X, Polynomial.map_C,
       hdelta]
-  rw [htarget, hshift, HexPolyMathlib.toPolynomial_compose,
+  rw [htarget, hshift, HexPolyTheory.toPolynomial_compose,
     Polynomial.map_comp, hsub, ← hsource]
 
 /-- Specializing the shifted outer presentation at the executable generator
@@ -1382,7 +1382,7 @@ theorem outerEval_shifted (level : Level) (lower : List Level)
     letI : CommRing (DensePoly (Arithmetic.Coeff lower)) := denseCommRing
     outerEval level lower hvalid hinjectiveTop
         (shiftedOuter level lower f c) =
-      HexPolyMathlib.toPolynomial
+      HexPolyTheory.toPolynomial
         (Factor.rawPoly (level :: lower)
           (Factor.shiftTop level lower f c)) := by
   let hinjectiveLower := hinjectiveTop.tail level lower hvalid.1.1
@@ -1414,7 +1414,7 @@ theorem outerEval_shifted (level : Level) (lower : List Level)
     rfl
   have hconjugatePolynomial :
       conjugatePolynomial level lower level.root.toComplex f =
-        (HexPolyMathlib.toPolynomial
+        (HexPolyTheory.toPolynomial
           (Factor.rawPoly (level :: lower) f)).map topHom := by
     have h := conjugatePolynomial_eq_map level lower hvalid hinjectiveTop
       level.root.toComplex hrelation f
@@ -1444,10 +1444,10 @@ theorem outerEval_shifted (level : Level) (lower : List Level)
       LevelSemantics.coeffDenote (level :: lower)
         (Factor.topGenerator level lower) = _
     rw [hrat, topGenerator_denote level lower hvalid]
-  have hsubRaw : HexPolyMathlib.toPolynomial substitution =
+  have hsubRaw : HexPolyTheory.toPolynomial substitution =
       Polynomial.X - Polynomial.C delta := by
     ext n
-    rw [HexPolyMathlib.coeff_toPolynomial, Polynomial.coeff_sub]
+    rw [HexPolyTheory.coeff_toPolynomial, Polynomial.coeff_sub]
     rcases n with _ | n
     · simp [substitution, DensePoly.coeff_ofCoeffs, Array.getD]
     · rcases n with _ | n
@@ -1456,14 +1456,14 @@ theorem outerEval_shifted (level : Level) (lower : List Level)
           Polynomial.coeff_X_of_ne_one (R := Arithmetic.Coeff
             (level :: lower)) (show n + 1 + 1 ≠ 1 by omega)]
         rfl
-  have hsub : (HexPolyMathlib.toPolynomial substitution).map topHom =
+  have hsub : (HexPolyTheory.toPolynomial substitution).map topHom =
       Polynomial.X - Polynomial.C ((c : ℂ) * level.root.toComplex) := by
     rw [hsubRaw, Polynomial.map_sub, Polynomial.map_X, Polynomial.map_C,
       hdelta]
   apply Polynomial.map_injective topHom topHom.injective
   rw [outerEval_map level lower hvalid hinjectiveTop]
   rw [eval_shiftedOuter level lower hvalid hinjectiveLower hinvLower]
-  rw [hshift, HexPolyMathlib.toPolynomial_compose, Polynomial.map_comp, hsub]
+  rw [hshift, HexPolyTheory.toPolynomial_compose, Polynomial.map_comp, hsub]
   rw [← hconjugatePolynomial]
 
 end Norm

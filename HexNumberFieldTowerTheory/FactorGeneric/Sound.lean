@@ -6,7 +6,7 @@ Authors: Kim Morrison
 
 module
 
-public import HexNumberFieldTowerMathlib.FactorGeneric.Product
+public import HexNumberFieldTowerTheory.FactorGeneric.Product
 
 public section
 
@@ -33,7 +33,7 @@ theorem factorSquarefree_mem_sound :
         Norm.coeffFieldPoly levels hvalid hinjective hinv
       ∀ factor ∈ factors,
         Factor.polyCoords (Factor.rawPoly levels factor) = factor ∧
-          Irreducible (HexPolyMathlib.toPolynomial
+          Irreducible (HexPolyTheory.toPolynomial
             (Factor.rawPoly levels factor)) := by
   intro levels
   induction levels with
@@ -87,20 +87,20 @@ theorem factorSquarefree_mem_sound :
           have hlowerSound : ∀ lowerFactor ∈ lowerFactors,
               Factor.polyCoords (Factor.rawPoly lower lowerFactor) =
                   lowerFactor ∧
-                Irreducible (HexPolyMathlib.toPolynomial
+                Irreducible (HexPolyTheory.toPolynomial
                   (Factor.rawPoly lower lowerFactor)) := by
             exact ih hvalid.2.2 hinjectiveLower norm hlower'
           have hnormCheck : Norm.isSquarefree lower norm :=
             findSquarefreeShift_squarefree level lower f (by simpa using hfind)
           have hnormSquarefree : Squarefree
-              (HexPolyMathlib.toPolynomial
+              (HexPolyTheory.toPolynomial
                 (Factor.rawPoly lower norm)) :=
             squarefree_toPolynomial_of_check lower hvalid.2.2
               hinjectiveLower hinvLower norm hnormCheck
           have hnormEq : norm = Norm.oneLevel level lower f shift :=
             findSquarefreeShift_norm level lower f (by simpa using hfind)
           have htragerSquarefree : Squarefree
-              (HexPolyMathlib.toPolynomial
+              (HexPolyTheory.toPolynomial
                 (tragerNorm level lower
                   (Factor.rawPoly (level :: lower)
                     (Factor.shiftTop level lower f shift)))) := by

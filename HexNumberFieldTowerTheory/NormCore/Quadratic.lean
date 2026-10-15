@@ -6,7 +6,7 @@ Authors: Kim Morrison
 
 module
 
-public import HexNumberFieldTowerMathlib.NormCore.Basic
+public import HexNumberFieldTowerTheory.NormCore.Basic
 import Mathlib.Algebra.Polynomial.Degree.IsMonicOfDegree
 
 public section
@@ -64,11 +64,11 @@ variable {R : Type*} [CommRing R] [DecidableEq R]
 local instance : CommRing (DensePoly R) := denseCommRing
 
 private theorem poly_pair (a b : R) :
-    HexPolyMathlib.toPolynomial (DensePoly.ofCoeffs #[a, b]) = C a + X * C b := by
+    HexPolyTheory.toPolynomial (DensePoly.ofCoeffs #[a, b]) = C a + X * C b := by
   simp [Finset.sum_range_succ, Array.getD]
 
 private theorem poly_three (a b : R) :
-    HexPolyMathlib.toPolynomial (DensePoly.ofCoeffs #[a, b, 1]) =
+    HexPolyTheory.toPolynomial (DensePoly.ofCoeffs #[a, b, 1]) =
       X ^ 2 + C b * X + C a := by
   simp [Finset.sum_range_succ, Array.getD]
   ring
@@ -76,20 +76,20 @@ private theorem poly_three (a b : R) :
 private theorem map_scale (φ : DensePoly R →+* ℂ) (k : R) (p : DensePoly R) :
     φ (DensePoly.scale k p) = φ (DensePoly.C k) * φ p := by
   have heq : DensePoly.scale k p = DensePoly.C k * p := by
-    apply (HexPolyMathlib.equiv (R := R)).injective
+    apply (HexPolyTheory.equiv (R := R)).injective
     simp
   rw [heq, map_mul]
 
 private theorem map_shift (φ : DensePoly R →+* ℂ) (p : DensePoly R) :
     φ (DensePoly.shift 1 p) = φ (DensePoly.monomial 1 1) * φ p := by
   have heq : DensePoly.shift 1 p = DensePoly.monomial 1 1 * p := by
-    apply (HexPolyMathlib.equiv (R := R)).injective
-    change HexPolyMathlib.toPolynomial (DensePoly.shift 1 p) =
-      HexPolyMathlib.toPolynomial (DensePoly.monomial 1 1 * p)
-    rw [HexPolyMathlib.toPolynomial_mul, HexPolyMathlib.toPolynomial_monomial,
+    apply (HexPolyTheory.equiv (R := R)).injective
+    change HexPolyTheory.toPolynomial (DensePoly.shift 1 p) =
+      HexPolyTheory.toPolynomial (DensePoly.monomial 1 1 * p)
+    rw [HexPolyTheory.toPolynomial_mul, HexPolyTheory.toPolynomial_monomial,
       monomial_one_one_eq_X]
     ext n
-    cases n <;> simp [HexPolyMathlib.coeff_toPolynomial]
+    cases n <;> simp [HexPolyTheory.coeff_toPolynomial]
     rfl
   rw [heq, map_mul]
 
@@ -104,7 +104,7 @@ private theorem horner_eval {ι : Type*} (u v : ι → R) (a b c : R)
     let outer := items.foldr (fun i value =>
       DensePoly.ofCoeffs #[DensePoly.C (u i), DensePoly.C (v i)] +
         DensePoly.ofCoeffs #[DensePoly.monomial 1 1, DensePoly.C (-c)] * value) 0
-    ((HexPolyMathlib.toPolynomial outer).map φ).eval z = φ parts.1 + z * φ parts.2 := by
+    ((HexPolyTheory.toPolynomial outer).map φ).eval z = φ parts.1 + z * φ parts.2 := by
   let : CommRing (DensePoly (DensePoly R)) := denseCommRing
   let scale (k : R) (p : DensePoly R) := if k = 0 then 0 else DensePoly.scale k p
   let step (i : ι) (p q : DensePoly R) :=
@@ -113,27 +113,27 @@ private theorem horner_eval {ι : Type*} (u v : ι → R) (a b c : R)
   let lift (i : ι) := DensePoly.ofCoeffs #[DensePoly.C (u i), DensePoly.C (v i)]
   let base : DensePoly (DensePoly R) :=
     DensePoly.ofCoeffs #[DensePoly.monomial 1 1, DensePoly.C (-c)]
-  let χ : R →+* ℂ := (φ.comp (HexPolyMathlib.equiv (R := R)).symm.toRingHom).comp C
+  let χ : R →+* ℂ := (φ.comp (HexPolyTheory.equiv (R := R)).symm.toRingHom).comp C
   have hχ (k : R) : χ k = φ (DensePoly.C k) := by simp [χ]
   let ψ : DensePoly (DensePoly R) →+* ℂ := (evalRingHom z).comp
-    ((mapRingHom φ).comp (HexPolyMathlib.equiv (R := DensePoly R)).toRingHom)
+    ((mapRingHom φ).comp (HexPolyTheory.equiv (R := DensePoly R)).toRingHom)
   have hadd (g h : DensePoly (DensePoly R)) : ψ (g + h) = ψ g + ψ h := by
-    change ((HexPolyMathlib.toPolynomial (g + h)).map φ).eval z =
-      ((HexPolyMathlib.toPolynomial g).map φ).eval z +
-        ((HexPolyMathlib.toPolynomial h).map φ).eval z
+    change ((HexPolyTheory.toPolynomial (g + h)).map φ).eval z =
+      ((HexPolyTheory.toPolynomial g).map φ).eval z +
+        ((HexPolyTheory.toPolynomial h).map φ).eval z
     simp
   have hmul (g h : DensePoly (DensePoly R)) : ψ (g * h) = ψ g * ψ h := by
-    change ((HexPolyMathlib.toPolynomial (g * h)).map φ).eval z =
-      ((HexPolyMathlib.toPolynomial g).map φ).eval z *
-        ((HexPolyMathlib.toPolynomial h).map φ).eval z
+    change ((HexPolyTheory.toPolynomial (g * h)).map φ).eval z =
+      ((HexPolyTheory.toPolynomial g).map φ).eval z *
+        ((HexPolyTheory.toPolynomial h).map φ).eval z
     simp
   have hlift (i : ι) : ψ (lift i) = χ (u i) + z * χ (v i) := by
-    change ((HexPolyMathlib.toPolynomial (lift i)).map φ).eval z = _
+    change ((HexPolyTheory.toPolynomial (lift i)).map φ).eval z = _
     rw [poly_pair]
     simp [← hχ]
     ring
   have hbase : ψ base = φ (DensePoly.monomial 1 1) - χ c * z := by
-    change ((HexPolyMathlib.toPolynomial base).map φ).eval z = _
+    change ((HexPolyTheory.toPolynomial base).map φ).eval z = _
     rw [poly_pair]
     simp [← hχ]
     ring
@@ -180,7 +180,7 @@ private theorem quadratic_image {ι : Type*} (u v : ι → R) (a b c : R)
     φ (DensePoly.resultant (DensePoly.ofCoeffs #[DensePoly.C a, DensePoly.C b, 1]) outer) =
       φ (parts.1 * parts.1 - parts.1 * scale b parts.2 + parts.2 * scale a parts.2) := by
   let : IsDomain (DensePoly R) :=
-    (HexPolyMathlib.equiv (R := R)).toMulEquiv.isDomain (Polynomial R)
+    (HexPolyTheory.equiv (R := R)).toMulEquiv.isDomain (Polynomial R)
   let scale (k : R) (p : DensePoly R) := if k = 0 then 0 else DensePoly.scale k p
   let parts := items.foldr (fun i (p, q) =>
     (DensePoly.shift 1 p + scale (c * a) q + DensePoly.C (u i),
@@ -191,22 +191,22 @@ private theorem quadratic_image {ι : Type*} (u v : ι → R) (a b c : R)
   let m : DensePoly (DensePoly R) := DensePoly.ofCoeffs #[DensePoly.C a, DensePoly.C b, 1]
   change φ (DensePoly.resultant m outer) =
     φ (parts.1 * parts.1 - parts.1 * scale b parts.2 + parts.2 * scale a parts.2)
-  have hm : HexPolyMathlib.toPolynomial m =
+  have hm : HexPolyTheory.toPolynomial m =
       X ^ 2 + C (DensePoly.C b) * X + C (DensePoly.C a) := poly_three _ _
   have hdegree : m.natDegree = 2 := by
-    rw [← HexPolyMathlib.natDegree_toPolynomial, hm]
+    rw [← HexPolyTheory.natDegree_toPolynomial, hm]
     exact (isMonicOfDegree_add_add_two (DensePoly.C b) (DensePoly.C a)).natDegree_eq
-  have hmap : (HexPolyMathlib.toPolynomial m).map φ =
+  have hmap : (HexPolyTheory.toPolynomial m).map φ =
       X ^ 2 + C (φ (DensePoly.C b)) * X + C (φ (DensePoly.C a)) := by
     rw [hm]
     simp
-  have houter : ((HexPolyMathlib.toPolynomial outer).map φ).natDegree ≤ outer.natDegree := by
-    rw [← HexPolyMathlib.natDegree_toPolynomial]
+  have houter : ((HexPolyTheory.toPolynomial outer).map φ).natDegree ≤ outer.natDegree := by
+    rw [← HexPolyTheory.natDegree_toPolynomial]
     exact natDegree_map_le
   have hpoints (z : ℂ)
       (hz : z * z + φ (DensePoly.C b) * z + φ (DensePoly.C a) = 0) :
-      ((HexPolyMathlib.toPolynomial outer).map φ).eval z = φ parts.1 + φ parts.2 * z := by
-    have hpoint : ((HexPolyMathlib.toPolynomial outer).map φ).eval z =
+      ((HexPolyTheory.toPolynomial outer).map φ).eval z = φ parts.1 + φ parts.2 * z := by
+    have hpoint : ((HexPolyTheory.toPolynomial outer).map φ).eval z =
         φ parts.1 + z * φ parts.2 := horner_eval u v a b c φ z hz items
     simpa only [mul_comm] using hpoint
   have hscale (k : R) (p : DensePoly R) :
@@ -216,7 +216,7 @@ private theorem quadratic_image {ι : Type*} (u v : ι → R) (a b c : R)
     · rename_i hk
       subst k
       have hzero : DensePoly.C (0 : R) = (0 : DensePoly R) := by
-        apply (HexPolyMathlib.equiv (R := R)).injective
+        apply (HexPolyTheory.equiv (R := R)).injective
         simp
       simp [hzero]
     · exact map_scale φ k p
@@ -254,7 +254,7 @@ theorem quadratic_eq_resultant (level : Level) (lower : List Level)
     (DensePoly.shift 1 p + scale (shift * a) q + DensePoly.C (u coefficient),
      DensePoly.shift 1 q - scale shift p + scale (shift * b) q + DensePoly.C (v coefficient))) (0, 0)
   have hone : DensePoly.C (1 : Coeff lower) = (1 : DensePoly (Coeff lower)) := by
-    apply (HexPolyMathlib.equiv (R := Coeff lower)).injective
+    apply (HexPolyTheory.equiv (R := Coeff lower)).injective
     simp
   have hm : definingOuter level lower =
       DensePoly.ofCoeffs #[DensePoly.C a, DensePoly.C b, 1] := by

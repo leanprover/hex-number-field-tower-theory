@@ -6,12 +6,12 @@ Authors: Kim Morrison
 
 module
 
-public import HexNumberFieldTowerMathlib.Total
+public import HexNumberFieldTowerTheory.Total
 
 public section
 
 /-!
-The `HexNumberFieldTowerMathlib` library interprets validated computational
+The `HexNumberFieldTowerTheory` library interprets validated computational
 number towers in Mathlib and states the semantic contracts for arithmetic,
 factorization, adjoining, splitting, and primitive-element flattening.
 -/

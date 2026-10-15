@@ -6,7 +6,7 @@ Authors: Kim Morrison
 
 module
 
-public import HexNumberFieldTowerMathlib.FactorGeneric
+public import HexNumberFieldTowerTheory.FactorGeneric
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.LinearAlgebra.Dimension.Constructions
 
@@ -216,7 +216,7 @@ scoped instance (T : NumberTower) : CharZero (Elem T) where
 
 /-- Opt-in `Lean.Grind.Field` law package for the executable tower
 operations, derived from the scoped field instance through the standard
-Mathlib bridge. It is scoped together with the field instance so executable
+Theory companion. It is scoped together with the field instance so executable
 downstream code does not silently depend on the semantic dictionary. -/
 noncomputable scoped instance (T : NumberTower) : Lean.Grind.Field (Elem T) :=
   Field.toGrindField (K := Elem T)

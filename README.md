@@ -1,32 +1,32 @@
-# hex-number-field-tower-mathlib
+# hex-number-field-tower-theory
 
 Part of [`hex`](https://github.com/kim-em/hex-dev), a computer algebra
 library for Lean 4. The aim is fast executable code, fully verified, built
 with spec-driven development.
 
-Mathlib companion for
+Theory companion for
 [`hex-number-field-tower`](https://github.com/leanprover/hex-number-field-tower).
 It interprets every validated tower as a finite extension of `ℚ` with a
 fixed embedding into `ℂ` and proves the coordinate field operations,
 Trager factorization, adjoining, splitting fields, and primitive-element
 flattening correct. It depends on `hex-number-field-tower`,
-[`hex-number-field-mathlib`](https://github.com/leanprover/hex-number-field-mathlib),
-[`hex-resultant-mathlib`](https://github.com/leanprover/hex-resultant-mathlib),
-[`hex-berlekamp-zassenhaus-mathlib`](https://github.com/leanprover/hex-berlekamp-zassenhaus-mathlib),
+[`hex-number-field-theory`](https://github.com/leanprover/hex-number-field-theory),
+[`hex-resultant-theory`](https://github.com/leanprover/hex-resultant-theory),
+[`hex-berlekamp-zassenhaus-theory`](https://github.com/leanprover/hex-berlekamp-zassenhaus-theory),
 and
-[`hex-row-reduce-mathlib`](https://github.com/leanprover/hex-row-reduce-mathlib).
+[`hex-row-reduce-theory`](https://github.com/leanprover/hex-row-reduce-theory).
 
 # Quickstart
 
 ```toml
 [[require]]
-name = "hex-number-field-tower-mathlib"
-git = "https://github.com/leanprover/hex-number-field-tower-mathlib.git"
+name = "hex-number-field-tower-theory"
+git = "https://github.com/leanprover/hex-number-field-tower-theory.git"
 rev = "main"
 ```
 
 ```lean
-import HexNumberFieldTowerMathlib
+import HexNumberFieldTowerTheory
 
 open Hex
 
@@ -68,7 +68,7 @@ The sealed constructors of the computational package mean the level
 invariant follows by induction over the smart constructors, so the
 theorems cover every tower a client can build. The computational library
 stays Mathlib-free; field structure and complex semantics live here. See
-the [SPEC](SPEC/hex-number-field-tower-mathlib.md) for the theorem chain.
+the [SPEC](SPEC/hex-number-field-tower-theory.md) for the theorem chain.
 
 # Contributing
 

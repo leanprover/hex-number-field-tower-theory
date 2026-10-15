@@ -6,6 +6,6 @@ Authors: Kim Morrison
 
 module
 
-public import HexNumberFieldTowerMathlib.FactorGeneric.Complete
+public import HexNumberFieldTowerTheory.ArithmeticCore.Field
 
 public section

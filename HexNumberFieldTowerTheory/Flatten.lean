@@ -6,10 +6,10 @@ Authors: Kim Morrison
 
 module
 
-public import HexNumberFieldTowerMathlib.Split
-public import HexRowReduceMathlib
-import HexNumberFieldMathlib.Coordinates
-import HexNumberFieldMathlib.CommonField
+public import HexNumberFieldTowerTheory.Split
+public import HexRowReduceTheory
+import HexNumberFieldTheory.Coordinates
+import HexNumberFieldTheory.CommonField
 import Mathlib.LinearAlgebra.Basis.Basic
 
 public section
@@ -387,11 +387,11 @@ private theorem toList_getD (p : DensePoly Rat) (i : Nat) :
   exact DensePoly.toArray_getD p i
 
 private theorem eval₂_horner (p : DensePoly Rat) (z : ℂ) :
-    (HexPolyMathlib.toPolynomial p).eval₂ (algebraMap Rat ℂ) z =
+    (HexPolyTheory.toPolynomial p).eval₂ (algebraMap Rat ℂ) z =
       p.toArray.foldr
         (fun (coefficient : Rat) (value : ℂ) =>
           value * z + (coefficient : ℂ)) 0 := by
-  rw [HexPolyMathlib.eval₂_toPolynomial, ← Array.foldr_toList,
+  rw [HexPolyTheory.eval₂_toPolynomial, ← Array.foldr_toList,
     horner_eq_sum]
   apply Finset.sum_congr
   · simp
@@ -421,11 +421,11 @@ private theorem zpoly_toList_getD (p : ZPoly) (i : Nat) :
   exact DensePoly.toArray_getD p i
 
 private theorem zpoly_eval_horner (p : ZPoly) (z : ℂ) :
-    (HexRootsMathlib.toPolyℂ p).eval z =
+    (HexRootsTheory.toPolyℂ p).eval z =
       p.toArray.foldr
         (fun (coefficient : Int) (value : ℂ) =>
           value * z + (coefficient : ℂ)) 0 := by
-  rw [Polynomial.eval_map, HexPolyMathlib.eval₂_toPolynomial,
+  rw [Polynomial.eval_map, HexPolyTheory.eval₂_toPolynomial,
     ← Array.foldr_toList, intHorner_eq_sum]
   apply Finset.sum_congr
   · simp
@@ -437,10 +437,10 @@ private theorem toQAdjoin_complex (a : AlgebraicNumber) :
     PolyQuot.toComplex a.toQAdjoin a.rep a.rep_mk = a.toComplex := by
   unfold AlgebraicNumber.toQAdjoin PolyQuot.toComplex PolyQuot.reduce
   rw [PolyQuot.eval_reduceCoeffs]
-  have hpoly : HexPolyMathlib.toPolynomial
+  have hpoly : HexPolyTheory.toPolynomial
       (DensePoly.ofList ([0, 1] : List Rat)) = Polynomial.X := by
     ext n
-    rw [HexPolyMathlib.coeff_toPolynomial, DensePoly.coeff_ofList]
+    rw [HexPolyTheory.coeff_toPolynomial, DensePoly.coeff_ofList]
     rcases n with _ | (_ | n) <;> simp [Polynomial.coeff_X]; rfl
   rw [hpoly, Polynomial.eval₂_X]
   rfl

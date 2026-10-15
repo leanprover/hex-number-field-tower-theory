@@ -6,7 +6,7 @@ Authors: Kim Morrison
 
 module
 
-public import HexNumberFieldTowerMathlib.ArithmeticCore.Basic
+public import HexNumberFieldTowerTheory.ArithmeticCore.Basic
 
 public section
 
@@ -28,18 +28,18 @@ theorem denseMap_zero (lower : List Level) (x : ℂ)
 
 private theorem toPolynomial_dvd {R : Type*} [CommSemiring R] [DecidableEq R]
     {f g : DensePoly R} : f ∣ g →
-      HexPolyMathlib.toPolynomial f ∣ HexPolyMathlib.toPolynomial g := by
+      HexPolyTheory.toPolynomial f ∣ HexPolyTheory.toPolynomial g := by
   rintro ⟨q, rfl⟩
-  exact ⟨HexPolyMathlib.toPolynomial q, by simp⟩
+  exact ⟨HexPolyTheory.toPolynomial q, by simp⟩
 
 private theorem toPolynomial_ne_zero {R : Type*} [CommRing R] [DecidableEq R]
-    {f : DensePoly R} (hf : f ≠ 0) : HexPolyMathlib.toPolynomial f ≠ 0 := by
+    {f : DensePoly R} (hf : f ≠ 0) : HexPolyTheory.toPolynomial f ≠ 0 := by
   intro hzero
   apply hf
   calc
-    f = HexPolyMathlib.ofPolynomial (HexPolyMathlib.toPolynomial f) :=
-      (HexPolyMathlib.ofPolynomial_toPolynomial f).symm
-    _ = 0 := by rw [hzero, HexPolyMathlib.ofPolynomial_zero]
+    f = HexPolyTheory.ofPolynomial (HexPolyTheory.toPolynomial f) :=
+      (HexPolyTheory.ofPolynomial_toPolynomial f).symm
+    _ = 0 := by rw [hzero, HexPolyTheory.ofPolynomial_zero]
 
 /-- A dense polynomial of size one is the constant on its leading
 coefficient. -/
@@ -328,7 +328,7 @@ theorem separates_of_irreducible (level : Level) (lower : List Level)
       coeffDenote lower a⁻¹ = (coeffDenote lower a)⁻¹) :
     letI : Field (Arithmetic.Coeff lower) :=
       coeffField lower hvalid.2.2 hlowerInjective hlowerInv
-    Irreducible (HexPolyMathlib.toPolynomial
+    Irreducible (HexPolyTheory.toPolynomial
       (Arithmetic.Coeff.relation level lower)) →
       Separates level lower := by
   let : Field (Arithmetic.Coeff lower) :=
@@ -338,11 +338,11 @@ theorem separates_of_irreducible (level : Level) (lower : List Level)
     coeffHom lower hvalid.2.2 hlowerInjective hlowerInv
   let : Algebra (Arithmetic.Coeff lower) ℂ := ι.toAlgebra
   let relation := Arithmetic.Coeff.relation level lower
-  let p := HexPolyMathlib.toPolynomial relation
+  let p := HexPolyTheory.toPolynomial relation
   have hpMonic : p.Monic := by
     rw [Polynomial.Monic.def]
-    change (HexPolyMathlib.toPolynomial relation).leadingCoeff = 1
-    rw [HexPolyMathlib.leadingCoeff_toPolynomial]
+    change (HexPolyTheory.toPolynomial relation).leadingCoeff = 1
+    rw [HexPolyTheory.leadingCoeff_toPolynomial]
     change relation.leadingCoeff = 1
     rw [DensePoly.leadingCoeff_eq_coeff_last relation (by
       rw [relation_size level lower hvalid]
@@ -360,8 +360,8 @@ theorem separates_of_irreducible (level : Level) (lower : List Level)
       level.root.toComplex :=
     minpoly.eq_of_irreducible_of_monic hirreducible hpEval hpMonic
   intro f g hf hg heval
-  let fp := HexPolyMathlib.toPolynomial f
-  let gp := HexPolyMathlib.toPolynomial g
+  let fp := HexPolyTheory.toPolynomial f
+  let gp := HexPolyTheory.toPolynomial g
   have hmap : Polynomial.aeval level.root.toComplex fp =
       Polynomial.aeval level.root.toComplex gp := by
     change denseMap lower level.root.toComplex hvalid.2.2
@@ -390,9 +390,9 @@ theorem separates_of_irreducible (level : Level) (lower : List Level)
     omega
   have hpoly : fp = gp := sub_eq_zero.mp hdiff
   calc
-    f = HexPolyMathlib.ofPolynomial fp := by
+    f = HexPolyTheory.ofPolynomial fp := by
       simp [fp]
-    _ = HexPolyMathlib.ofPolynomial gp := by rw [hpoly]
+    _ = HexPolyTheory.ofPolynomial gp := by rw [hpoly]
     _ = g := by simp [gp]
 
 /-- Injectivity of canonical extended coordinates forces the monic level
@@ -406,19 +406,19 @@ theorem relation_irreducible_of_injective (level : Level)
       coeffDenote lower a⁻¹ = (coeffDenote lower a)⁻¹) :
     letI : Field (Arithmetic.Coeff lower) :=
       coeffField lower hvalid.2.2 hlowerInjective hlowerInv
-    Irreducible (HexPolyMathlib.toPolynomial
+    Irreducible (HexPolyTheory.toPolynomial
       (Arithmetic.Coeff.relation level lower)) := by
   let : Field (Arithmetic.Coeff lower) :=
     coeffField lower hvalid.2.2 hlowerInjective hlowerInv
   let relation := Arithmetic.Coeff.relation level lower
-  let p := HexPolyMathlib.toPolynomial relation
+  let p := HexPolyTheory.toPolynomial relation
   let ι : Arithmetic.Coeff lower →+* ℂ :=
     coeffHom lower hvalid.2.2 hlowerInjective hlowerInv
   let : Algebra (Arithmetic.Coeff lower) ℂ := ι.toAlgebra
   have hpMonic : p.Monic := by
     rw [Polynomial.Monic.def]
-    change (HexPolyMathlib.toPolynomial relation).leadingCoeff = 1
-    rw [HexPolyMathlib.leadingCoeff_toPolynomial]
+    change (HexPolyTheory.toPolynomial relation).leadingCoeff = 1
+    rw [HexPolyTheory.leadingCoeff_toPolynomial]
     change relation.leadingCoeff = 1
     rw [DensePoly.leadingCoeff_eq_coeff_last relation (by
       rw [relation_size level lower hvalid]
@@ -439,16 +439,16 @@ theorem relation_irreducible_of_injective (level : Level)
     by_contra hdegree
     have hlt : q.natDegree < level.degree := by omega
     let dense : DensePoly (Arithmetic.Coeff lower) :=
-      HexPolyMathlib.ofPolynomial q
+      HexPolyTheory.ofPolynomial q
     have hdenseDegree : dense.natDegree < level.degree := by
-      rw [← HexPolyMathlib.natDegree_toPolynomial]
+      rw [← HexPolyTheory.natDegree_toPolynomial]
       simpa [dense]
     have hdenseEval :
         denseEval lower level.root.toComplex level.degree dense = 0 := by
       rw [← denseMap_eq_denseEval lower level.root.toComplex hvalid.2.2
         hlowerInjective hlowerInv level.degree dense hdenseDegree]
       simp only [denseMap, dense,
-        HexPolyMathlib.toPolynomial_ofPolynomial]
+        HexPolyTheory.toPolynomial_ofPolynomial]
       change q.eval₂ ι level.root.toComplex = 0
       rw [← RingHom.algebraMap_toAlgebra ι]
       rw [← Polynomial.aeval_def]
@@ -457,7 +457,7 @@ theorem relation_irreducible_of_injective (level : Level)
       dense_eq_zero_of_eval level lower hinjective dense
         hdenseDegree hdenseEval
     have hqZero : q = 0 := by
-      have hmapped := congrArg HexPolyMathlib.toPolynomial hdenseZero
+      have hmapped := congrArg HexPolyTheory.toPolynomial hdenseZero
       simpa [dense] using hmapped
     exact (minpoly.ne_zero hintegral) hqZero
   have hpDegree : p.natDegree = level.degree := by
@@ -529,12 +529,12 @@ theorem xgcdLeftMonic_size_one (level : Level) (lower : List Level)
     rw [hq, hzero]
     exact DensePoly.zero_mul q
   have hgcdDegree : gcd.natDegree < level.degree := by
-    have hpolyValue : HexPolyMathlib.toPolynomial value ≠ 0 :=
+    have hpolyValue : HexPolyTheory.toPolynomial value ≠ 0 :=
       toPolynomial_ne_zero hvalueNe
     have hle := Polynomial.natDegree_le_of_dvd
       (toPolynomial_dvd hgcdDvdValue) hpolyValue
-    rw [HexPolyMathlib.natDegree_toPolynomial,
-      HexPolyMathlib.natDegree_toPolynomial] at hle
+    rw [HexPolyTheory.natDegree_toPolynomial,
+      HexPolyTheory.natDegree_toPolynomial] at hle
     exact hle.trans_lt hvalueDegree
   have hgcdMapNe : denseMap lower level.root.toComplex hvalid.2.2
       hlowerInjective hinv gcd ≠ 0 := by
@@ -555,26 +555,26 @@ theorem xgcdLeftMonic_size_one (level : Level) (lower : List Level)
     apply Nat.eq_zero_of_not_pos
     intro hgcdPos
     have hfactorDegree : factor.natDegree < level.degree := by
-      have hgcdPolyNe : HexPolyMathlib.toPolynomial gcd ≠ 0 :=
+      have hgcdPolyNe : HexPolyTheory.toPolynomial gcd ≠ 0 :=
         toPolynomial_ne_zero hgcdNe
-      have hfactorPolyNe : HexPolyMathlib.toPolynomial factor ≠ 0 :=
+      have hfactorPolyNe : HexPolyTheory.toPolynomial factor ≠ 0 :=
         toPolynomial_ne_zero hfactorNe
       have hsum : level.degree =
           gcd.natDegree + factor.natDegree := by
         calc
-          level.degree = (HexPolyMathlib.toPolynomial relation).natDegree := by
+          level.degree = (HexPolyTheory.toPolynomial relation).natDegree := by
             simpa using hrelationDegree.symm
-          _ = (HexPolyMathlib.toPolynomial (gcd * factor)).natDegree := by
+          _ = (HexPolyTheory.toPolynomial (gcd * factor)).natDegree := by
             rw [← hfactor]
-          _ = (HexPolyMathlib.toPolynomial gcd *
-                HexPolyMathlib.toPolynomial factor).natDegree := by
-            rw [HexPolyMathlib.toPolynomial_mul]
-          _ = (HexPolyMathlib.toPolynomial gcd).natDegree +
-                (HexPolyMathlib.toPolynomial factor).natDegree := by
+          _ = (HexPolyTheory.toPolynomial gcd *
+                HexPolyTheory.toPolynomial factor).natDegree := by
+            rw [HexPolyTheory.toPolynomial_mul]
+          _ = (HexPolyTheory.toPolynomial gcd).natDegree +
+                (HexPolyTheory.toPolynomial factor).natDegree := by
             rw [Polynomial.natDegree_mul hgcdPolyNe hfactorPolyNe]
           _ = gcd.natDegree + factor.natDegree := by
-            rw [HexPolyMathlib.natDegree_toPolynomial,
-              HexPolyMathlib.natDegree_toPolynomial]
+            rw [HexPolyTheory.natDegree_toPolynomial,
+              HexPolyTheory.natDegree_toPolynomial]
       omega
     have hfactorMap : denseMap lower level.root.toComplex hvalid.2.2
         hlowerInjective hinv factor = 0 := by
@@ -679,18 +679,18 @@ theorem denote_xgcd_inverse (level : Level) (lower : List Level)
       denseMap lower level.root.toComplex hvalid.2.2
         hlowerInjective hinv scaled := by
     have hdivision := EuclideanDomain.mod_add_div
-      (HexPolyMathlib.toPolynomial scaled)
-      (HexPolyMathlib.toPolynomial relation)
+      (HexPolyTheory.toPolynomial scaled)
+      (HexPolyTheory.toPolynomial relation)
     have hmapDivision := congrArg
       (Polynomial.eval₂ (coeffHom lower hvalid.2.2 hlowerInjective hinv)
         level.root.toComplex) hdivision
     rw [Polynomial.eval₂_add, Polynomial.eval₂_mul] at hmapDivision
     have hrelationPolynomial :
-        (HexPolyMathlib.toPolynomial relation).eval₂
+        (HexPolyTheory.toPolynomial relation).eval₂
             (coeffHom lower hvalid.2.2 hlowerInjective hinv)
             level.root.toComplex = 0 := hrelationMap
     rw [hrelationPolynomial, zero_mul, add_zero] at hmapDivision
-    rw [denseMap, HexPolyMathlib.toPolynomial_mod, denseMap]
+    rw [denseMap, HexPolyTheory.toPolynomial_mod, denseMap]
     exact hmapDivision
   have hnormalizedDegree : (scaled % relation).natDegree < level.degree := by
     rw [← hrelationDegree]
@@ -997,13 +997,13 @@ theorem coeffRatEquiv_ofData (data : Array Rat) :
 equivalence recovers the rational polynomial stored by its coordinates. -/
 theorem map_rawPoly_nil (f : Array (Array Rat)) :
     letI : Field (Arithmetic.Coeff []) := coeffFieldNil
-    (HexPolyMathlib.toPolynomial (Factor.rawPoly [] f)).map
+    (HexPolyTheory.toPolynomial (Factor.rawPoly [] f)).map
         coeffRatEquiv.toRingHom =
-      HexPolyMathlib.toPolynomial (Factor.toRatPoly f) := by
+      HexPolyTheory.toPolynomial (Factor.toRatPoly f) := by
   let : Field (Arithmetic.Coeff []) := coeffFieldNil
   ext n
-  rw [Polynomial.coeff_map, HexPolyMathlib.coeff_toPolynomial,
-    HexPolyMathlib.coeff_toPolynomial]
+  rw [Polynomial.coeff_map, HexPolyTheory.coeff_toPolynomial,
+    HexPolyTheory.coeff_toPolynomial]
   by_cases hn : n < f.size
   · simp [Factor.rawPoly, Factor.toRatPoly, DensePoly.coeff_ofCoeffs,
       Array.getD, hn, coeffRatEquiv_ofData]
@@ -1016,7 +1016,7 @@ irreducibility after transporting canonical base coefficients to `Rat`. -/
 theorem isIrreducible_nil_toMathlib (f : Array (Array Rat))
     (hcheck : Factor.isIrreducible [] f = true) :
     letI : Field (Arithmetic.Coeff []) := coeffFieldNil
-    Irreducible (HexPolyMathlib.toPolynomial (Factor.rawPoly [] f)) := by
+    Irreducible (HexPolyTheory.toPolynomial (Factor.rawPoly [] f)) := by
   let : Field (Arithmetic.Coeff []) := coeffFieldNil
   simp only [Factor.isIrreducible, Bool.and_eq_true] at hcheck
   have hdegree := hcheck.1.1.1
@@ -1026,65 +1026,65 @@ theorem isIrreducible_nil_toMathlib (f : Array (Array Rat))
   let raw := Factor.toRatPoly f
   let primitive := ZPoly.ratPolyPrimitivePart raw
   have hirreducibleInt :
-      Irreducible (HexPolyZMathlib.toPolynomial primitive) :=
+      Irreducible (HexPolyZTheory.toPolynomial primitive) :=
     (ZPoly.Irreducible_iff_polynomialIrreducible primitive).mp
       ((ZPoly.isIrreducible_iff primitive).mp hirreducible)
   have hprimitiveNe : primitive ≠ 0 := by
     intro hzero
     apply hirreducibleInt.ne_zero
     rw [hzero]
-    exact HexPolyZMathlib.toPolynomial_zero
-  have hprimitiveRatNe : HexPolyZMathlib.toPolyℚ primitive ≠ 0 :=
-    HexPolyZMathlib.toPolyℚ_ne_zero hprimitiveNe
+    exact HexPolyZTheory.toPolynomial_zero
+  have hprimitiveRatNe : HexPolyZTheory.toPolyℚ primitive ≠ 0 :=
+    HexPolyZTheory.toPolyℚ_ne_zero hprimitiveNe
   have hrawDegree :
-      0 < (HexPolyMathlib.toPolynomial raw).natDegree := by
+      0 < (HexPolyTheory.toPolynomial raw).natDegree := by
     rw [← map_rawPoly_nil f,
       Polynomial.natDegree_map_eq_of_injective coeffRatEquiv.injective,
-      HexPolyMathlib.natDegree_toPolynomial]
+      HexPolyTheory.natDegree_toPolynomial]
     exact hdegree'
   obtain ⟨unit, hunit⟩ :=
     ZPoly.ratPolyPrimitivePart_rational_associate raw
   have hunitNe : unit ≠ 0 := by
     intro hzero
-    have hrawZero : HexPolyMathlib.toPolynomial raw = 0 := by
+    have hrawZero : HexPolyTheory.toPolynomial raw = 0 := by
       rw [hunit, hzero]
       simp
     rw [hrawZero] at hrawDegree
     simp at hrawDegree
   have hassociate :
-      HexPolyMathlib.toPolynomial raw =
-        Polynomial.C unit * HexPolyZMathlib.toPolyℚ primitive := by
-    rw [hunit, HexPolyMathlib.toPolynomial_scale,
-      HexPolyZMathlib.toPolynomial_toRatPoly]
+      HexPolyTheory.toPolynomial raw =
+        Polynomial.C unit * HexPolyZTheory.toPolyℚ primitive := by
+    rw [hunit, HexPolyTheory.toPolynomial_scale,
+      HexPolyZTheory.toPolynomial_toRatPoly]
   have hprimitiveDegree :
-      0 < (HexPolyZMathlib.toPolyℚ primitive).natDegree := by
+      0 < (HexPolyZTheory.toPolyℚ primitive).natDegree := by
     have hdegreeEq := congrArg Polynomial.natDegree hassociate
     rw [Polynomial.natDegree_mul
       (Polynomial.C_ne_zero.mpr hunitNe) hprimitiveRatNe] at hdegreeEq
     have hdegreeEq' :
-        (HexPolyMathlib.toPolynomial raw).natDegree =
-          (HexPolyZMathlib.toPolyℚ primitive).natDegree := by
+        (HexPolyTheory.toPolynomial raw).natDegree =
+          (HexPolyZTheory.toPolyℚ primitive).natDegree := by
       simpa using hdegreeEq
     exact hdegreeEq' ▸ hrawDegree
   have hdegreeInt :
-      (HexPolyZMathlib.toPolynomial primitive).natDegree ≠ 0 := by
+      (HexPolyZTheory.toPolynomial primitive).natDegree ≠ 0 := by
     rw [← Polynomial.natDegree_map_eq_of_injective
       (f := Int.castRingHom Rat) Int.cast_injective
-      (HexPolyZMathlib.toPolynomial primitive)]
+      (HexPolyZTheory.toPolynomial primitive)]
     exact Nat.ne_of_gt hprimitiveDegree
   have hirreducibleRat :
-      Irreducible (HexPolyZMathlib.toPolyℚ primitive) :=
+      Irreducible (HexPolyZTheory.toPolyℚ primitive) :=
     (Polynomial.IsPrimitive.Int.irreducible_iff_irreducible_map_cast
       (hirreducibleInt.isPrimitive hdegreeInt)).mp hirreducibleInt
   have hrawIrreducible :
-      Irreducible (HexPolyMathlib.toPolynomial raw) := by
+      Irreducible (HexPolyTheory.toPolynomial raw) := by
     rw [hassociate, mul_comm]
     exact (irreducible_mul_isUnit
       (Polynomial.isUnit_C.mpr hunitNe.isUnit)).mpr hirreducibleRat
   apply (MulEquiv.irreducible_iff
     (f := (Polynomial.mapEquiv coeffRatEquiv).toMulEquiv)).mp
   change Irreducible
-    ((HexPolyMathlib.toPolynomial (Factor.rawPoly [] f)).map
+    ((HexPolyTheory.toPolynomial (Factor.rawPoly [] f)).map
       coeffRatEquiv.toRingHom)
   rw [map_rawPoly_nil]
   exact hrawIrreducible
@@ -1093,14 +1093,14 @@ theorem isIrreducible_nil_toMathlib (f : Array (Array Rat))
 equivalence recovers its raw rational polynomial. -/
 theorem map_relation_nil (level : Level) (hstruct : level.Structural 1) :
     letI : Field (Arithmetic.Coeff []) := coeffFieldNil
-    (HexPolyMathlib.toPolynomial (Arithmetic.Coeff.relation level [])).map
+    (HexPolyTheory.toPolynomial (Arithmetic.Coeff.relation level [])).map
         coeffRatEquiv.toRingHom =
-      HexPolyMathlib.toPolynomial
+      HexPolyTheory.toPolynomial
         (Factor.toRatPoly (level.polynomial [])) := by
   let : Field (Arithmetic.Coeff []) := coeffFieldNil
   ext n
-  rw [Polynomial.coeff_map, HexPolyMathlib.coeff_toPolynomial,
-    HexPolyMathlib.coeff_toPolynomial]
+  rw [Polynomial.coeff_map, HexPolyTheory.coeff_toPolynomial,
+    HexPolyTheory.coeff_toPolynomial]
   have hsize : level.defining.size = level.degree := hstruct.2.1
   have htop : Arithmetic.fixedCoeffs (levelsDim []) #[1] = #[1] := by
     apply Array.ext
@@ -1172,16 +1172,16 @@ irreducible over the canonical base coefficient field. -/
 theorem relation_irreducible_rational (level : Level)
     (hstruct : level.Structural 1) (hrelation : level.RationalRelation []) :
     letI : Field (Arithmetic.Coeff []) := coeffFieldNil
-    Irreducible (HexPolyMathlib.toPolynomial
+    Irreducible (HexPolyTheory.toPolynomial
       (Arithmetic.Coeff.relation level [])) := by
   let : Field (Arithmetic.Coeff []) := coeffFieldNil
   obtain ⟨_, original, checked, hp, hraw⟩ := hrelation
   let : ZPoly.CheckedIrreducible original := checked
   have hirrOriginal :
-      Irreducible (HexPolyZMathlib.toPolyℚ original) :=
+      Irreducible (HexPolyZTheory.toPolyℚ original) :=
     ZPoly.CheckedIrreducible.irreducibleRat original
   have hirrRoot :
-      Irreducible (HexPolyZMathlib.toPolyℚ level.root.p) := by
+      Irreducible (HexPolyZTheory.toPolyℚ level.root.p) := by
     rw [hp]
     unfold ZPoly.normalizePrimitiveSign
     split <;> rename_i hsign
@@ -1189,10 +1189,10 @@ theorem relation_irreducible_rational (level : Level)
         Polynomial.isUnit_C.mpr (by norm_num)
       have hirrNeg :
           Irreducible
-            (HexPolyZMathlib.toPolyℚ original * Polynomial.C (-1 : Rat)) :=
+            (HexPolyZTheory.toPolyℚ original * Polynomial.C (-1 : Rat)) :=
         (irreducible_mul_isUnit hunit).mpr hirrOriginal
-      simpa [HexPolyZMathlib.toPolyℚ,
-        HexPolyMathlib.toPolynomial_scale, mul_comm] using hirrNeg
+      simpa [HexPolyZTheory.toPolyℚ,
+        HexPolyTheory.toPolynomial_scale, mul_comm] using hirrNeg
     · exact hirrOriginal
   have hlcInt : level.root.p.leadingCoeff ≠ 0 :=
     ne_of_gt level.root.pos_lc
@@ -1202,15 +1202,15 @@ theorem relation_irreducible_rational (level : Level)
       IsUnit (Polynomial.C ((level.root.p.leadingCoeff : Rat)⁻¹)) :=
     Polynomial.isUnit_C.mpr (inv_ne_zero hlcRat).isUnit
   have hirrRaw :
-      Irreducible (HexPolyMathlib.toPolynomial
+      Irreducible (HexPolyTheory.toPolynomial
         (Factor.toRatPoly (level.polynomial []))) := by
-    rw [hraw, HexPolyMathlib.toPolynomial_scale,
-      HexPolyZMathlib.toPolynomial_toRatPoly, mul_comm]
+    rw [hraw, HexPolyTheory.toPolynomial_scale,
+      HexPolyZTheory.toPolynomial_toRatPoly, mul_comm]
     exact (irreducible_mul_isUnit hscaleUnit).mpr hirrRoot
   apply (MulEquiv.irreducible_iff
     (f := (Polynomial.mapEquiv coeffRatEquiv).toMulEquiv)).mp
   change Irreducible
-    ((HexPolyMathlib.toPolynomial
+    ((HexPolyTheory.toPolynomial
       (Arithmetic.Coeff.relation level [])).map coeffRatEquiv.toRingHom)
   rw [map_relation_nil level hstruct]
   exact hirrRaw
@@ -1222,7 +1222,7 @@ factor checker base case. -/
 theorem DenoteInjective.singleton (level : Level)
     (hvalid : LevelsValid [level]) : DenoteInjective [level] := by
   let : Field (Arithmetic.Coeff []) := coeffFieldNil
-  have hrelation : Irreducible (HexPolyMathlib.toPolynomial
+  have hrelation : Irreducible (HexPolyTheory.toPolynomial
       (Arithmetic.Coeff.relation level [])) := by
     cases hvalid.2.1 with
     | rational hrat =>
@@ -1232,13 +1232,13 @@ theorem DenoteInjective.singleton (level : Level)
           (level.polynomial []) hchecker
         have heq : Arithmetic.Coeff.relation level [] =
             Factor.rawPoly [] (level.polynomial []) := by
-          apply (HexPolyMathlib.equiv
+          apply (HexPolyTheory.equiv
             (R := Arithmetic.Coeff [])).injective
           apply (Polynomial.mapEquiv coeffRatEquiv).injective
-          change (HexPolyMathlib.toPolynomial
+          change (HexPolyTheory.toPolynomial
               (Arithmetic.Coeff.relation level [])).map
                 coeffRatEquiv.toRingHom =
-            (HexPolyMathlib.toPolynomial
+            (HexPolyTheory.toPolynomial
               (Factor.rawPoly [] (level.polynomial []))).map
                 coeffRatEquiv.toRingHom
           rw [map_relation_nil level hvalid.1,
